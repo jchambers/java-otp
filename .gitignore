@@ -1,0 +1,10 @@
+target
+.DS_Store
+doc
+.classpath
+.project
+.settings
+_site
+#ignore intellij files
+*.iml
+.idea/
