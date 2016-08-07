@@ -72,9 +72,11 @@ public class TimeBasedOneTimePasswordGeneratorTest {
     }
 
     /**
-     * Generates a key of a specific length using a string of incrementing decimal digits. It's not at all obvious from
-     * https://tools.ietf.org/html/rfc6238#appendix-B (in fact, it flat out says the opposite), but each algorithm needs
-     * to be tested with its own key.
+     * <p>Generates a key of a specific length using a string of incrementing decimal digits. It's not at all obvious
+     * from <a href="https://tools.ietf.org/html/rfc6238#appendix-B">RFC 6238, Appendix B</a> (in fact, it says the
+     * opposite), but each algorithm needs to be tested with its own key. See the
+     * <a href="https://www.rfc-editor.org/errata_search.php?rfc=6238&eid=2866">RFC errata</a> for additional
+     * details.</p>
      *
      * @param length the length (in bytes) of the key to generate
      *
