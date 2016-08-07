@@ -5,8 +5,7 @@ java-otp is a library for generating one-time passwords using the HOTP (RFC 4226
 To demonstrate generating one-time passwords, we'll focus on the TOTP algorithm. To create a TOTP generator:
 
 ```java
-final TimeBasedOneTimePasswordGenerator totp =
-    new TimeBasedOneTimePasswordGenerator();
+final TimeBasedOneTimePasswordGenerator totp = new TimeBasedOneTimePasswordGenerator();
 ```
 
 To actually generate time-based one-time passwords, you'll need a secret key and a timestamp. Secure key management is beyond the scope of this document; for the purposes of an example, though, we'll generate a random key:
