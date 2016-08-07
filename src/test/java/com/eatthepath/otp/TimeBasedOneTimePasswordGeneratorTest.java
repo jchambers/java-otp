@@ -17,6 +17,10 @@ import org.junit.Test;
 
 public class TimeBasedOneTimePasswordGeneratorTest {
 
+    /**
+     * Tests time-based one-time password generation using HMAC-SHA1 and the test vectors from
+     * <a href="https://tools.ietf.org/html/rfc6238#appendix-B">RFC&nbsp;6238, Appendix B</a>.
+     */
     @Test
     public void testGenerateOneTimePasswordSha1() throws NoSuchAlgorithmException, InvalidKeyException {
         final TimeBasedOneTimePasswordGenerator totp =
@@ -35,6 +39,10 @@ public class TimeBasedOneTimePasswordGeneratorTest {
         this.validateOneTimePasswords(totp, key, expectedPasswords);
     }
 
+    /**
+     * Tests time-based one-time password generation using HMAC-SHA256 and the test vectors from
+     * <a href="https://tools.ietf.org/html/rfc6238#appendix-B">RFC&nbsp;6238, Appendix B</a>.
+     */
     @Test
     public void testGenerateOneTimePasswordSha256() throws NoSuchAlgorithmException, InvalidKeyException {
         final TimeBasedOneTimePasswordGenerator totp =
@@ -53,6 +61,10 @@ public class TimeBasedOneTimePasswordGeneratorTest {
         this.validateOneTimePasswords(totp, key, expectedPasswords);
     }
 
+    /**
+     * Tests time-based one-time password generation using HMAC-SHA512 and the test vectors from
+     * <a href="https://tools.ietf.org/html/rfc6238#appendix-B">RFC&nbsp;6238, Appendix B</a>.
+     */
     @Test
     public void testGenerateOneTimePasswordSha512() throws NoSuchAlgorithmException, InvalidKeyException {
         final TimeBasedOneTimePasswordGenerator totp =

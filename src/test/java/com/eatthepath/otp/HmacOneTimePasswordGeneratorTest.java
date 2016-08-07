@@ -13,6 +13,10 @@ import org.junit.Test;
 
 public class HmacOneTimePasswordGeneratorTest {
 
+    /**
+     * Tests generation of one-time passwords using the test vectors from
+     * <a href="https://tools.ietf.org/html/rfc4226#appendix-D">RFC&nbsp;4226, Appendix D</a>.
+     */
     @Test
     public void testGetOneTimePassword() throws InvalidKeyException, NoSuchAlgorithmException {
         final HmacOneTimePasswordGenerator hmacOneTimePasswordGenerator = new HmacOneTimePasswordGenerator();
