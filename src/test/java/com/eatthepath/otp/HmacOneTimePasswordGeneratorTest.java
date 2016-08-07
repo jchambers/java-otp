@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
+import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -16,7 +17,7 @@ public class HmacOneTimePasswordGeneratorTest {
     public void testGetOneTimePassword() throws InvalidKeyException, NoSuchAlgorithmException {
         final HmacOneTimePasswordGenerator hmacOneTimePasswordGenerator = new HmacOneTimePasswordGenerator();
 
-        final SecretKeySpec keySpec = new SecretKeySpec("12345678901234567890".getBytes(StandardCharsets.US_ASCII), "RAW");
+        final Key key = new SecretKeySpec("12345678901234567890".getBytes(StandardCharsets.US_ASCII), "RAW");
 
         final int[] expectedValues = new int[] {
                 755224,
@@ -32,7 +33,7 @@ public class HmacOneTimePasswordGeneratorTest {
         };
 
         for (int i = 0; i < expectedValues.length; i++) {
-            assertEquals(expectedValues[i], hmacOneTimePasswordGenerator.getOneTimePassword(keySpec, i));
+            assertEquals(expectedValues[i], hmacOneTimePasswordGenerator.generateOneTimePassword(key, i));
         }
     }
 }

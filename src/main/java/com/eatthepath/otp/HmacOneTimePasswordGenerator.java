@@ -52,7 +52,7 @@ public class HmacOneTimePasswordGenerator {
         this.algorithm = algorithm;
     }
 
-    public int getOneTimePassword(final Key key, final long counter) throws InvalidKeyException {
+    public int generateOneTimePassword(final Key key, final long counter) throws InvalidKeyException {
         final Mac mac;
 
         try {
@@ -67,9 +67,7 @@ public class HmacOneTimePasswordGenerator {
         buffer.putLong(0, counter);
 
         final byte[] hmac = mac.doFinal(buffer.array());
-        assert hmac.length == 20;
-
-        final int offset = hmac[19] & 0x0f;
+        final int offset = hmac[hmac.length - 1] & 0x0f;
 
         for (int i = 0; i < 4; i++) {
             // Note that we're re-using the first four bytes of the buffer here; we just ignore the latter four from
