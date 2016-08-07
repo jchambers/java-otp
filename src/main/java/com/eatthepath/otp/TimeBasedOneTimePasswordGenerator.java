@@ -9,8 +9,11 @@ import java.util.concurrent.TimeUnit;
 import javax.crypto.Mac;
 
 /**
- * Generates time-based one-time passwords (TOTP) as specified in
- * <a href="https://tools.ietf.org/html/rfc6238">RFC&nbsp;6238</a>.
+ * <p>Generates time-based one-time passwords (TOTP) as specified in
+ * <a href="https://tools.ietf.org/html/rfc6238">RFC&nbsp;6238</a>.</p>
+ *
+ * <p>{@code TimeBasedOneTimePasswordGenerator} instances are thread-safe and may be shared and re-used across multiple
+ * threads.</p>
  *
  * @author <a href="https://github.com/jchambers">Jon Chambers</a>
  */
@@ -99,5 +102,14 @@ public class TimeBasedOneTimePasswordGenerator {
      */
     public int generateOneTimePassword(final Key key, final Date timestamp) throws InvalidKeyException {
         return this.hmacOneTimePasswordGenerator.generateOneTimePassword(key, timestamp.getTime() / this.timeStepMillis);
+    }
+
+    /**
+     * Returns the name of the HMAC algorithm used by this generator.
+     *
+     * @return the name of the HMAC algorithm used by this generator
+     */
+    public String getAlgorithm() {
+        return this.hmacOneTimePasswordGenerator.getAlgorithm();
     }
 }

@@ -8,8 +8,11 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.Mac;
 
 /**
- * Generates HMAC-based one-time passwords (HOTP) as specified in
- * <a href="https://tools.ietf.org/html/rfc4226">RFC&nbsp;4226</a>.
+ * <p>Generates HMAC-based one-time passwords (HOTP) as specified in
+ * <a href="https://tools.ietf.org/html/rfc4226">RFC&nbsp;4226</a>.</p>
+ *
+ * <p>{@code HmacOneTimePasswordGenerator} instances are thread-safe and may be shared and re-used across multiple
+ * threads.</p>
  *
  * @author <a href="https://github.com/jchambers">Jon Chambers</a>
  */
@@ -143,5 +146,14 @@ public class HmacOneTimePasswordGenerator {
         final int hotp = buffer.getInt(0) & 0x7fffffff;
 
         return hotp % this.modDivisor;
+    }
+
+    /**
+     * Returns the name of the HMAC algorithm used by this generator.
+     *
+     * @return the name of the HMAC algorithm used by this generator
+     */
+    public String getAlgorithm() {
+        return this.algorithm;
     }
 }
