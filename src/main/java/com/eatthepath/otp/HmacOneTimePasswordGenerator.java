@@ -69,13 +69,15 @@ public class HmacOneTimePasswordGenerator {
      *
      * @param passwordLength the length, in decimal digits, of the one-time passwords to be generated; must be between
      * 6 and 8, inclusive
-     * @param algorithm the name of the {@link javax.crypto.Mac} algorithm to use when generating passwords
+     * @param algorithm the name of the {@link javax.crypto.Mac} algorithm to use when generating passwords; note that
+     * HOTP only allows for {@value com.eatthepath.otp.HmacOneTimePasswordGenerator#ALGORITHM_HMAC_SHA1}, but derived
+     * standards like TOTP may allow for other algorithms
      *
      * @throws NoSuchAlgorithmException if the given algorithm is not supported by the underlying JRE
      *
-     * @see {@link com.eatthepath.otp.HmacOneTimePasswordGenerator#ALGORITHM_HMAC_SHA1}
-     * @see {@link com.eatthepath.otp.HmacOneTimePasswordGenerator#ALGORITHM_HMAC_SHA256}
-     * @see {@link com.eatthepath.otp.HmacOneTimePasswordGenerator#ALGORITHM_HMAC_SHA512}
+     * @see com.eatthepath.otp.HmacOneTimePasswordGenerator#ALGORITHM_HMAC_SHA1
+     * @see com.eatthepath.otp.HmacOneTimePasswordGenerator#ALGORITHM_HMAC_SHA256
+     * @see com.eatthepath.otp.HmacOneTimePasswordGenerator#ALGORITHM_HMAC_SHA512
      */
     public HmacOneTimePasswordGenerator(final int passwordLength, final String algorithm) throws NoSuchAlgorithmException {
         switch (passwordLength) {
