@@ -24,7 +24,7 @@ public class TimeBasedOneTimePasswordGeneratorTest {
     @Test
     public void testGenerateOneTimePasswordSha1() throws NoSuchAlgorithmException, InvalidKeyException {
         final TimeBasedOneTimePasswordGenerator totp =
-                new TimeBasedOneTimePasswordGenerator(30, TimeUnit.SECONDS, 8, HmacOneTimePasswordGenerator.ALGORITHM_HMAC_SHA1);
+                new TimeBasedOneTimePasswordGenerator(30, TimeUnit.SECONDS, 8, TimeBasedOneTimePasswordGenerator.TOTP_ALGORITHM_HMAC_SHA1);
 
         final Key key = this.generateKey(20);
 
@@ -46,7 +46,7 @@ public class TimeBasedOneTimePasswordGeneratorTest {
     @Test
     public void testGenerateOneTimePasswordSha256() throws NoSuchAlgorithmException, InvalidKeyException {
         final TimeBasedOneTimePasswordGenerator totp =
-                new TimeBasedOneTimePasswordGenerator(30, TimeUnit.SECONDS, 8, HmacOneTimePasswordGenerator.ALGORITHM_HMAC_SHA256);
+                new TimeBasedOneTimePasswordGenerator(30, TimeUnit.SECONDS, 8, TimeBasedOneTimePasswordGenerator.TOTP_ALGORITHM_HMAC_SHA256);
 
         final Key key = this.generateKey(32);
 
@@ -68,7 +68,7 @@ public class TimeBasedOneTimePasswordGeneratorTest {
     @Test
     public void testGenerateOneTimePasswordSha512() throws NoSuchAlgorithmException, InvalidKeyException {
         final TimeBasedOneTimePasswordGenerator totp =
-                new TimeBasedOneTimePasswordGenerator(30, TimeUnit.SECONDS, 8, HmacOneTimePasswordGenerator.ALGORITHM_HMAC_SHA512);
+                new TimeBasedOneTimePasswordGenerator(30, TimeUnit.SECONDS, 8, TimeBasedOneTimePasswordGenerator.TOTP_ALGORITHM_HMAC_SHA512);
 
         final Key key = this.generateKey(64);
 

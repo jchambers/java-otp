@@ -28,43 +28,34 @@ public class HmacOneTimePasswordGenerator {
     public static final int DEFAULT_PASSWORD_LENGTH = 6;
 
     /**
-     * A string identifier for the HMAC-SHA1 algorithm (required by HOTP and allowed by TOTP).
+     * The HMAC algorithm specified by the HOTP standard.
      */
-    public static final String ALGORITHM_HMAC_SHA1 = "HmacSHA1";
+    public static final String HOTP_HMAC_ALGORITHM = "HmacSHA1";
 
     /**
-     * A string identifier for the HMAC-SHA256 algorithm (allowed by TOTP).
-     */
-    public static final String ALGORITHM_HMAC_SHA256 = "HmacSHA256";
-
-    /**
-     * A string identifier for the HMAC-SHA512 algorithm (allowed by TOTP).
-     */
-    public static final String ALGORITHM_HMAC_SHA512 = "HmacSHA512";
-
-    /**
-     * Creates a new HMAC-based one-time password generator using a default password length
-     * ({@value com.eatthepath.otp.HmacOneTimePasswordGenerator#DEFAULT_PASSWORD_LENGTH} digits) and the HMAC-SHA1
-     * algorithm.
+     * Creates a new HMAC-based one-time password (HOTP) generator using a default password length
+     * ({@value com.eatthepath.otp.HmacOneTimePasswordGenerator#DEFAULT_PASSWORD_LENGTH} digits).
      *
-     * @throws NoSuchAlgorithmException if the underlying JRE doesn't support HMAC-SHA1, which should never happen
-     * except in cases of serious misconfiguration
+     * @throws NoSuchAlgorithmException if the underlying JRE doesn't support the
+     * {{@value com.eatthepath.otp.HmacOneTimePasswordGenerator#HOTP_HMAC_ALGORITHM}} algorithm, which should never
+     * happen except in cases of serious misconfiguration
      */
     public HmacOneTimePasswordGenerator() throws NoSuchAlgorithmException {
         this(DEFAULT_PASSWORD_LENGTH);
     }
 
     /**
-     * Creates a new HMAC-based one-time password generator using the given password length and the HMAC-SHA1 algorithm.
+     * Creates a new HMAC-based one-time password (HOTP) generator using the given password length.
      *
      * @param passwordLength the length, in decimal digits, of the one-time passwords to be generated; must be between
      * 6 and 8, inclusive
      *
-     * @throws NoSuchAlgorithmException if the underlying JRE doesn't support HMAC-SHA1, which should never happen
-     * except in cases of serious misconfiguration
+     * @throws NoSuchAlgorithmException if the underlying JRE doesn't support the
+     * {{@value com.eatthepath.otp.HmacOneTimePasswordGenerator#HOTP_HMAC_ALGORITHM}} algorithm, which should never
+     * happen except in cases of serious misconfiguration
      */
     public HmacOneTimePasswordGenerator(final int passwordLength) throws NoSuchAlgorithmException {
-        this(passwordLength, ALGORITHM_HMAC_SHA1);
+        this(passwordLength, HOTP_HMAC_ALGORITHM);
     }
 
     /**
@@ -79,12 +70,8 @@ public class HmacOneTimePasswordGenerator {
      * standards like TOTP may allow for other algorithms
      *
      * @throws NoSuchAlgorithmException if the given algorithm is not supported by the underlying JRE
-     *
-     * @see com.eatthepath.otp.HmacOneTimePasswordGenerator#ALGORITHM_HMAC_SHA1
-     * @see com.eatthepath.otp.HmacOneTimePasswordGenerator#ALGORITHM_HMAC_SHA256
-     * @see com.eatthepath.otp.HmacOneTimePasswordGenerator#ALGORITHM_HMAC_SHA512
      */
-    public HmacOneTimePasswordGenerator(final int passwordLength, final String algorithm) throws NoSuchAlgorithmException {
+    protected HmacOneTimePasswordGenerator(final int passwordLength, final String algorithm) throws NoSuchAlgorithmException {
         switch (passwordLength) {
             case 6: {
                 this.modDivisor = 1_000_000;
