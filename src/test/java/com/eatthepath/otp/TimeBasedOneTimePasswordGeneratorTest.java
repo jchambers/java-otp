@@ -15,7 +15,23 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.junit.Test;
 
-public class TimeBasedOneTimePasswordGeneratorTest {
+public class TimeBasedOneTimePasswordGeneratorTest extends HmacOneTimePasswordGeneratorTest {
+
+    @Override
+    protected HmacOneTimePasswordGenerator getDefaultGenerator() throws NoSuchAlgorithmException {
+        return new TimeBasedOneTimePasswordGenerator();
+    }
+
+    @Test
+    public void testGetTimeStep() throws NoSuchAlgorithmException {
+        final long timeStepSeconds = 97;
+
+        final TimeBasedOneTimePasswordGenerator totp =
+                new TimeBasedOneTimePasswordGenerator(timeStepSeconds, TimeUnit.SECONDS);
+
+        assertEquals(timeStepSeconds, totp.getTimeStep(TimeUnit.SECONDS));
+        assertEquals(timeStepSeconds * 1000, totp.getTimeStep(TimeUnit.MILLISECONDS));
+    }
 
     /**
      * Tests time-based one-time password generation using HMAC-SHA1 and the test vectors from
