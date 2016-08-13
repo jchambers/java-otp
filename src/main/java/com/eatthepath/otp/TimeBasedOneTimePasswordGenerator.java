@@ -61,7 +61,7 @@ public class TimeBasedOneTimePasswordGenerator extends HmacOneTimePasswordGenera
      * algorithm ({@value com.eatthepath.otp.HmacOneTimePasswordGenerator#HOTP_HMAC_ALGORITHM}).
      *
      * @throws NoSuchAlgorithmException if the underlying JRE doesn't support the
-     * {{@value com.eatthepath.otp.HmacOneTimePasswordGenerator#HOTP_HMAC_ALGORITHM}} algorithm, which should never
+     * {@value com.eatthepath.otp.HmacOneTimePasswordGenerator#HOTP_HMAC_ALGORITHM} algorithm, which should never
      * happen except in cases of serious misconfiguration
      */
     public TimeBasedOneTimePasswordGenerator() throws NoSuchAlgorithmException {
@@ -77,7 +77,7 @@ public class TimeBasedOneTimePasswordGenerator extends HmacOneTimePasswordGenera
      * @param timeStepUnit the units for the the given time step
      *
      * @throws NoSuchAlgorithmException if the underlying JRE doesn't support the
-     * {{@value com.eatthepath.otp.HmacOneTimePasswordGenerator#HOTP_HMAC_ALGORITHM}} algorithm, which should never
+     * {@value com.eatthepath.otp.HmacOneTimePasswordGenerator#HOTP_HMAC_ALGORITHM} algorithm, which should never
      * happen except in cases of serious misconfiguration
      */
     public TimeBasedOneTimePasswordGenerator(final long timeStep, final TimeUnit timeStepUnit) throws NoSuchAlgorithmException {
@@ -94,7 +94,7 @@ public class TimeBasedOneTimePasswordGenerator extends HmacOneTimePasswordGenera
      * 6 and 8, inclusive
      *
      * @throws NoSuchAlgorithmException if the underlying JRE doesn't support the
-     * {{@value com.eatthepath.otp.HmacOneTimePasswordGenerator#HOTP_HMAC_ALGORITHM}} algorithm, which should never
+     * {@value com.eatthepath.otp.HmacOneTimePasswordGenerator#HOTP_HMAC_ALGORITHM} algorithm, which should never
      * happen except in cases of serious misconfiguration
      */
     public TimeBasedOneTimePasswordGenerator(final long timeStep, final TimeUnit timeStepUnit, final int passwordLength) throws NoSuchAlgorithmException {

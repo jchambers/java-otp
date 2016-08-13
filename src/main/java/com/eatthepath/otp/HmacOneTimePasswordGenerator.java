@@ -57,7 +57,7 @@ public class HmacOneTimePasswordGenerator {
      * ({@value com.eatthepath.otp.HmacOneTimePasswordGenerator#DEFAULT_PASSWORD_LENGTH} digits).
      *
      * @throws NoSuchAlgorithmException if the underlying JRE doesn't support the
-     * {{@value com.eatthepath.otp.HmacOneTimePasswordGenerator#HOTP_HMAC_ALGORITHM}} algorithm, which should never
+     * {@value com.eatthepath.otp.HmacOneTimePasswordGenerator#HOTP_HMAC_ALGORITHM} algorithm, which should never
      * happen except in cases of serious misconfiguration
      */
     public HmacOneTimePasswordGenerator() throws NoSuchAlgorithmException {
@@ -71,7 +71,7 @@ public class HmacOneTimePasswordGenerator {
      * 6 and 8, inclusive
      *
      * @throws NoSuchAlgorithmException if the underlying JRE doesn't support the
-     * {{@value com.eatthepath.otp.HmacOneTimePasswordGenerator#HOTP_HMAC_ALGORITHM}} algorithm, which should never
+     * {@value com.eatthepath.otp.HmacOneTimePasswordGenerator#HOTP_HMAC_ALGORITHM} algorithm, which should never
      * happen except in cases of serious misconfiguration
      */
     public HmacOneTimePasswordGenerator(final int passwordLength) throws NoSuchAlgorithmException {
