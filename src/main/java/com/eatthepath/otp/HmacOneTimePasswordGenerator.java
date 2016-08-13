@@ -17,8 +17,10 @@ import javax.crypto.Mac;
  * @author <a href="https://github.com/jchambers">Jon Chambers</a>
  */
 public class HmacOneTimePasswordGenerator {
-    private final int modDivisor;
     private final String algorithm;
+    private final int passwordLength;
+
+    private final int modDivisor;
 
     /**
      * The default length, in decimal digits, for one-time passwords.
@@ -104,6 +106,8 @@ public class HmacOneTimePasswordGenerator {
             }
         }
 
+        this.passwordLength = passwordLength;
+
         // Our purpose here is just to throw an exception immediately if the algorithm is bogus.
         Mac.getInstance(algorithm);
         this.algorithm = algorithm;
@@ -146,6 +150,15 @@ public class HmacOneTimePasswordGenerator {
         final int hotp = buffer.getInt(0) & 0x7fffffff;
 
         return hotp % this.modDivisor;
+    }
+
+    /**
+     * Returns the length, in decimal digits, of passwords produced by this generator.
+     *
+     * @return the length, in decimal digits, of passwords produced by this generator
+     */
+    public int getPasswordLength() {
+        return this.passwordLength;
     }
 
     /**
