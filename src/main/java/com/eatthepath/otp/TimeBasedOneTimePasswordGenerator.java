@@ -110,9 +110,9 @@ public class TimeBasedOneTimePasswordGenerator extends HmacOneTimePasswordGenera
      * @param passwordLength the length, in decimal digits, of the one-time passwords to be generated; must be between
      * 6 and 8, inclusive
      * @param algorithm the name of the {@link javax.crypto.Mac} algorithm to use when generating passwords; TOTP allows
-     * for {@value com.eatthepath.otp.HmacOneTimePasswordGenerator#ALGORITHM_HMAC_SHA1},
-     * {@value com.eatthepath.otp.HmacOneTimePasswordGenerator#ALGORITHM_HMAC_SHA256}, and
-     * {@value com.eatthepath.otp.HmacOneTimePasswordGenerator#ALGORITHM_HMAC_SHA512}
+     * for {@value com.eatthepath.otp.TimeBasedOneTimePasswordGenerator#TOTP_ALGORITHM_HMAC_SHA1},
+     * {@value com.eatthepath.otp.TimeBasedOneTimePasswordGenerator#TOTP_ALGORITHM_HMAC_SHA256}, and
+     * {@value com.eatthepath.otp.TimeBasedOneTimePasswordGenerator#TOTP_ALGORITHM_HMAC_SHA512}
      *
      * @throws NoSuchAlgorithmException if the underlying JRE doesn't support HMAC-SHA1, which should never happen
      * except in cases of serious misconfiguration

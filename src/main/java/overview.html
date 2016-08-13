@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+
+<!-- Copyright (c) 2016 Jon Chambers
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE. -->
+
+<html lang="en">
+    <head>
+        <title>java-otp overview</title>
+    </head>
+    
+    <body>
+        <p>java-otp is a library for generating one-time passwords using the <a href="https://tools.ietf.org/html/rfc4226">HOTP (RFC 4226)</a> or <a href="https://tools.ietf.org/html/rfc6238">TOTP (RFC 6238)</a> passwords in Java.</p>
+
+        <h2>Usage</h2>
+
+        <p>To demonstrate generating one-time passwords, we'll focus on the TOTP algorithm. To create a TOTP generator with a default password length, time step, and HMAC algorithm:</p>
+
+        <pre>final TimeBasedOneTimePasswordGenerator totp = new TimeBasedOneTimePasswordGenerator();</pre>
+
+        <p>To actually generate time-based one-time passwords, you'll need a secret key and a timestamp. Secure key management is beyond the scope of this document; for the purposes of an example, though, we'll generate a random key:</p>
+
+        <pre>final Key secretKey;
+{
+    final KeyGenerator keyGenerator = KeyGenerator.getInstance(totp.getAlgorithm());
+    keyGenerator.init(20);
+
+    secretKey = keyGenerator.generateKey();
+}</pre>
+
+        <p>Armed with a secret key, we can deterministically generate one-time passwords for any timestamp:</p>
+
+        <pre>final Date now = new Date();
+final Date later = new Date(now.getTime() + TimeUnit.SECONDS.toMillis(30));
+
+System.out.format("Current password: %06d\n", totp.generateOneTimePassword(secretKey, now));
+System.out.format("Future password:  %06d\n", totp.generateOneTimePassword(secretKey, later));</pre>
+
+        <h2>License and copyright</h2>
+
+        <p>Copyright (c) 2016 Jon Chambers</p>
+
+        <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+
+        <p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+
+        <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+        
+    </body>
+</html>
