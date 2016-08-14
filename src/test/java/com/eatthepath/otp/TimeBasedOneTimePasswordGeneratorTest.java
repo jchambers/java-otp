@@ -62,7 +62,11 @@ public class TimeBasedOneTimePasswordGeneratorTest extends HmacOneTimePasswordGe
         final TimeBasedOneTimePasswordGenerator totp =
                 new TimeBasedOneTimePasswordGenerator(30, TimeUnit.SECONDS, 8, TimeBasedOneTimePasswordGenerator.TOTP_ALGORITHM_HMAC_SHA1);
 
-        final Key key = this.generateKey(20);
+        final Key key;
+        {
+            final String keyString = "12345678901234567890";
+            key = new SecretKeySpec(keyString.getBytes(StandardCharsets.US_ASCII), "RAW");
+        }
 
         final Map<Date, Integer> expectedPasswords = new HashMap<>();
         expectedPasswords.put(new Date(TimeUnit.SECONDS.toMillis(59)), 94287082);
@@ -84,7 +88,13 @@ public class TimeBasedOneTimePasswordGeneratorTest extends HmacOneTimePasswordGe
         final TimeBasedOneTimePasswordGenerator totp =
                 new TimeBasedOneTimePasswordGenerator(30, TimeUnit.SECONDS, 8, TimeBasedOneTimePasswordGenerator.TOTP_ALGORITHM_HMAC_SHA256);
 
-        final Key key = this.generateKey(32);
+        final Key key;
+        {
+            // The RFC incorrectly states that the same key is used for all test vectors, but that's not actually true;
+            // see the errata (https://www.rfc-editor.org/errata_search.php?rfc=6238&eid=2866) for details
+            final String keyString = "12345678901234567890123456789012";
+            key = new SecretKeySpec(keyString.getBytes(StandardCharsets.US_ASCII), "RAW");
+        }
 
         final Map<Date, Integer> expectedPasswords = new HashMap<>();
         expectedPasswords.put(new Date(TimeUnit.SECONDS.toMillis(59)), 46119246);
@@ -106,7 +116,13 @@ public class TimeBasedOneTimePasswordGeneratorTest extends HmacOneTimePasswordGe
         final TimeBasedOneTimePasswordGenerator totp =
                 new TimeBasedOneTimePasswordGenerator(30, TimeUnit.SECONDS, 8, TimeBasedOneTimePasswordGenerator.TOTP_ALGORITHM_HMAC_SHA512);
 
-        final Key key = this.generateKey(64);
+        final Key key;
+        {
+            // The RFC incorrectly states that the same key is used for all test vectors, but that's not actually true;
+            // see the errata (https://www.rfc-editor.org/errata_search.php?rfc=6238&eid=2866) for details
+            final String keyString = "1234567890123456789012345678901234567890123456789012345678901234";
+            key = new SecretKeySpec(keyString.getBytes(StandardCharsets.US_ASCII), "RAW");
+        }
 
         final Map<Date, Integer> expectedPasswords = new HashMap<>();
         expectedPasswords.put(new Date(TimeUnit.SECONDS.toMillis(59)), 90693936);
@@ -117,27 +133,6 @@ public class TimeBasedOneTimePasswordGeneratorTest extends HmacOneTimePasswordGe
         expectedPasswords.put(new Date(TimeUnit.SECONDS.toMillis(20000000000L)), 47863826);
 
         this.validateOneTimePasswords(totp, key, expectedPasswords);
-    }
-
-    /**
-     * <p>Generates a key of a specific length using a string of incrementing decimal digits. It's not at all obvious
-     * from <a href="https://tools.ietf.org/html/rfc6238#appendix-B">RFC 6238, Appendix B</a> (in fact, it says the
-     * opposite), but each algorithm needs to be tested with its own key. See the
-     * <a href="https://www.rfc-editor.org/errata_search.php?rfc=6238&eid=2866">RFC errata</a> for additional
-     * details.</p>
-     *
-     * @param length the length (in bytes) of the key to generate
-     *
-     * @return a {@code Key} derived from a string of incrementing decimal digits
-     */
-    private Key generateKey(final int length) {
-        final StringBuilder builder = new StringBuilder(length);
-
-        for (int i = 0; i < length; i++) {
-            builder.append((i + 1) % 10);
-        }
-
-        return new SecretKeySpec(builder.toString().getBytes(StandardCharsets.US_ASCII), "RAW");
     }
 
     private void validateOneTimePasswords(final TimeBasedOneTimePasswordGenerator totp, final Key key, final Map<Date, Integer> expectedPasswords) throws InvalidKeyException {
