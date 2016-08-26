@@ -41,7 +41,8 @@ public class TimeBasedOneTimePasswordGenerator extends HmacOneTimePasswordGenera
     private final long timeStepMillis;
 
     /**
-     * A string identifier for the HMAC-SHA1 algorithm (required by HOTP and allowed by TOTP).
+     * A string identifier for the HMAC-SHA1 algorithm (required by HOTP and allowed by TOTP). HMAC-SHA1 is the default
+     * algorithm for TOTP.
      */
     public static final String TOTP_ALGORITHM_HMAC_SHA1 = "HmacSHA1";
 
