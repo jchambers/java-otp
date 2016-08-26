@@ -14,7 +14,9 @@ To actually generate time-based one-time passwords, you'll need a secret key and
 final Key secretKey;
 {
     final KeyGenerator keyGenerator = KeyGenerator.getInstance(totp.getAlgorithm());
-    keyGenerator.init(20);
+
+    // SHA-1 and SHA-256 prefer 64-byte (512-bit) keys; SHA512 prefers 128-byte keys
+    keyGenerator.init(512);
 
     secretKey = keyGenerator.generateKey();
 }
