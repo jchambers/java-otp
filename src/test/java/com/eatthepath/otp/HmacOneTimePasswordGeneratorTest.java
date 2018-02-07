@@ -29,8 +29,12 @@ import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.spec.SecretKeySpec;
 
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+@RunWith(JUnitParamsRunner.class)
 public class HmacOneTimePasswordGeneratorTest {
 
     @Test(expected = IllegalArgumentException.class)
@@ -65,27 +69,22 @@ public class HmacOneTimePasswordGeneratorTest {
      * <a href="https://tools.ietf.org/html/rfc4226#appendix-D">RFC&nbsp;4226, Appendix D</a>.
      */
     @Test
-    public void testGetOneTimePassword() throws InvalidKeyException, NoSuchAlgorithmException {
+    @Parameters({
+            "0, 755224",
+            "1, 287082",
+            "2, 359152",
+            "3, 969429",
+            "4, 338314",
+            "5, 254676",
+            "6, 287922",
+            "7, 162583",
+            "8, 399871",
+            "9, 520489" })
+    public void testGenerateOneTimePassword(final int counter, final int expectedOneTimePassword) throws Exception {
         final HmacOneTimePasswordGenerator hmacOneTimePasswordGenerator = this.getDefaultGenerator();
 
         final Key key = new SecretKeySpec("12345678901234567890".getBytes(StandardCharsets.US_ASCII), "RAW");
-
-        final int[] expectedValues = new int[] {
-                755224,
-                287082,
-                359152,
-                969429,
-                338314,
-                254676,
-                287922,
-                162583,
-                399871,
-                520489
-        };
-
-        for (int i = 0; i < expectedValues.length; i++) {
-            assertEquals(expectedValues[i], hmacOneTimePasswordGenerator.generateOneTimePassword(key, i));
-        }
+        assertEquals(expectedOneTimePassword, hmacOneTimePasswordGenerator.generateOneTimePassword(key, counter));
     }
 
     protected HmacOneTimePasswordGenerator getDefaultGenerator() throws NoSuchAlgorithmException {
