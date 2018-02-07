@@ -57,7 +57,7 @@ public class TimeBasedOneTimePasswordGenerator extends HmacOneTimePasswordGenera
     public static final String TOTP_ALGORITHM_HMAC_SHA512 = "HmacSHA512";
 
     /**
-     * Constructs a new time=based one-time password generator with a default time-step (30 seconds), password length
+     * Constructs a new time-based one-time password generator with a default time-step (30 seconds), password length
      * ({@value com.eatthepath.otp.HmacOneTimePasswordGenerator#DEFAULT_PASSWORD_LENGTH} decimal digits), and HMAC
      * algorithm ({@value com.eatthepath.otp.HmacOneTimePasswordGenerator#HOTP_HMAC_ALGORITHM}).
      *
@@ -70,7 +70,7 @@ public class TimeBasedOneTimePasswordGenerator extends HmacOneTimePasswordGenera
     }
 
     /**
-     * Constructs a new time=based one-time password generator with the given time-step and a default password length
+     * Constructs a new time-based one-time password generator with the given time-step and a default password length
      * ({@value com.eatthepath.otp.HmacOneTimePasswordGenerator#DEFAULT_PASSWORD_LENGTH} decimal digits) and HMAC
      * algorithm ({@value com.eatthepath.otp.HmacOneTimePasswordGenerator#HOTP_HMAC_ALGORITHM}).
      *
@@ -86,7 +86,7 @@ public class TimeBasedOneTimePasswordGenerator extends HmacOneTimePasswordGenera
     }
 
     /**
-     * Constructs a new time=based one-time password generator with the given time-step and password length and a
+     * Constructs a new time-based one-time password generator with the given time-step and password length and a
      * default HMAC algorithm ({@value com.eatthepath.otp.HmacOneTimePasswordGenerator#HOTP_HMAC_ALGORITHM}).
      *
      * @param timeStep the magnitude of the time-step for this generator
@@ -103,7 +103,7 @@ public class TimeBasedOneTimePasswordGenerator extends HmacOneTimePasswordGenera
     }
 
     /**
-     * Constructs a new time=based one-time password generator with the given time-step, password length, and HMAC
+     * Constructs a new time-based one-time password generator with the given time-step, password length, and HMAC
      * algorithm.
      *
      * @param timeStep the magnitude of the time-step for this generator
