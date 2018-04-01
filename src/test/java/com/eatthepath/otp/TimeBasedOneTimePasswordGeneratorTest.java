@@ -66,32 +66,58 @@ public class TimeBasedOneTimePasswordGeneratorTest extends HmacOneTimePasswordGe
      */
     @Test
     @Parameters({
-            "59,          94287082, 12345678901234567890,                                             HmacSHA1",
-            "1111111109,   7081804, 12345678901234567890,                                             HmacSHA1",
-            "1111111111,  14050471, 12345678901234567890,                                             HmacSHA1",
-            "1234567890,  89005924, 12345678901234567890,                                             HmacSHA1",
-            "2000000000,  69279037, 12345678901234567890,                                             HmacSHA1",
-            "20000000000, 65353130, 12345678901234567890,                                             HmacSHA1",
-            "59,          46119246, 12345678901234567890123456789012,                                 HmacSHA256",
-            "1111111109,  68084774, 12345678901234567890123456789012,                                 HmacSHA256",
-            "1111111111,  67062674, 12345678901234567890123456789012,                                 HmacSHA256",
-            "1234567890,  91819424, 12345678901234567890123456789012,                                 HmacSHA256",
-            "2000000000,  90698825, 12345678901234567890123456789012,                                 HmacSHA256",
-            "20000000000, 77737706, 12345678901234567890123456789012,                                 HmacSHA256",
-            "59,          90693936, 1234567890123456789012345678901234567890123456789012345678901234, HmacSHA512",
-            "1111111109,  25091201, 1234567890123456789012345678901234567890123456789012345678901234, HmacSHA512",
-            "1111111111,  99943326, 1234567890123456789012345678901234567890123456789012345678901234, HmacSHA512",
-            "1234567890,  93441116, 1234567890123456789012345678901234567890123456789012345678901234, HmacSHA512",
-            "2000000000,  38618901, 1234567890123456789012345678901234567890123456789012345678901234, HmacSHA512",
-            "20000000000, 47863826, 1234567890123456789012345678901234567890123456789012345678901234, HmacSHA512" })
-    public void testGenerateOneTimePassword(final long epochSeconds, final int expectedOneTimePassword, final String keyString, final String algorithm) throws Exception {
+            "HmacSHA1,   59,          94287082",
+            "HmacSHA1,   1111111109,   7081804",
+            "HmacSHA1,   1111111111,  14050471",
+            "HmacSHA1,   1234567890,  89005924",
+            "HmacSHA1,   2000000000,  69279037",
+            "HmacSHA1,   20000000000, 65353130",
+            "HmacSHA256, 59,          46119246",
+            "HmacSHA256, 1111111109,  68084774",
+            "HmacSHA256, 1111111111,  67062674",
+            "HmacSHA256, 1234567890,  91819424",
+            "HmacSHA256, 2000000000,  90698825",
+            "HmacSHA256, 20000000000, 77737706",
+            "HmacSHA512, 59,          90693936",
+            "HmacSHA512, 1111111109,  25091201",
+            "HmacSHA512, 1111111111,  99943326",
+            "HmacSHA512, 1234567890,  93441116",
+            "HmacSHA512, 2000000000,  38618901",
+            "HmacSHA512, 20000000000, 47863826" })
+    public void testGenerateOneTimePassword(final String algorithm, final long epochSeconds, final int expectedOneTimePassword) throws Exception {
 
         final TimeBasedOneTimePasswordGenerator totp =
                 new TimeBasedOneTimePasswordGenerator(30, TimeUnit.SECONDS, 8, algorithm);
 
-        final Key key = new SecretKeySpec(keyString.getBytes(StandardCharsets.US_ASCII), "RAW");
         final Date date = new Date(TimeUnit.SECONDS.toMillis(epochSeconds));
 
-        assertEquals(expectedOneTimePassword, totp.generateOneTimePassword(key, date));
+        assertEquals(expectedOneTimePassword, totp.generateOneTimePassword(getKeyForAlgorithm(algorithm), date));
+    }
+
+    private static Key getKeyForAlgorithm(final String algorithm) {
+        final String keyString;
+
+        switch (algorithm) {
+            case "HmacSHA1": {
+                keyString = "12345678901234567890";
+                break;
+            }
+
+            case "HmacSHA256": {
+                keyString = "12345678901234567890123456789012";
+                break;
+            }
+
+            case "HmacSHA512": {
+                keyString = "1234567890123456789012345678901234567890123456789012345678901234";
+                break;
+            }
+
+            default: {
+                throw new IllegalArgumentException("Unexpected algorithm: " + algorithm);
+            }
+        }
+
+        return new SecretKeySpec(keyString.getBytes(StandardCharsets.US_ASCII), "RAW");
     }
 }
