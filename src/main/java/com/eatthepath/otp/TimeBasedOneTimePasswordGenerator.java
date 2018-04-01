@@ -115,8 +115,7 @@ public class TimeBasedOneTimePasswordGenerator extends HmacOneTimePasswordGenera
      * {@value com.eatthepath.otp.TimeBasedOneTimePasswordGenerator#TOTP_ALGORITHM_HMAC_SHA256}, and
      * {@value com.eatthepath.otp.TimeBasedOneTimePasswordGenerator#TOTP_ALGORITHM_HMAC_SHA512}
      *
-     * @throws NoSuchAlgorithmException if the underlying JRE doesn't support HMAC-SHA1, which should never happen
-     * except in cases of serious misconfiguration
+     * @throws NoSuchAlgorithmException if the underlying JRE doesn't support the given algorithm
      *
      * @see com.eatthepath.otp.TimeBasedOneTimePasswordGenerator#TOTP_ALGORITHM_HMAC_SHA1
      * @see com.eatthepath.otp.TimeBasedOneTimePasswordGenerator#TOTP_ALGORITHM_HMAC_SHA256
