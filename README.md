@@ -4,7 +4,7 @@ java-otp is a library for generating one-time passwords using the [HOTP (RFC 422
 
 ## Usage
 
-To demonstrate generating one-time passwords, we'll focus on the TOTP algorithm. To create a TOTP generator with a default password length, time step, and HMAC algorithm:
+To demonstrate generating one-time passwords, we'll focus on the TOTP algorithm. To create a TOTP generator with a default password length (6 digits), time step (30 seconds), and HMAC algorithm (HMAC-SHA1):
 
 ```java
 final TimeBasedOneTimePasswordGenerator totp = new TimeBasedOneTimePasswordGenerator();
@@ -17,7 +17,7 @@ final Key secretKey;
 {
     final KeyGenerator keyGenerator = KeyGenerator.getInstance(totp.getAlgorithm());
 
-    // SHA-1 and SHA-256 prefer 64-byte (512-bit) keys; SHA512 prefers 128-byte keys
+    // HMAC-SHA1 and HMAC-SHA256 prefer 64-byte (512-bit) keys; HMAC-SHA512 prefers 128-byte (1024-bit) keys
     keyGenerator.init(512);
 
     secretKey = keyGenerator.generateKey();
@@ -28,10 +28,17 @@ Armed with a secret key, we can deterministically generate one-time passwords fo
 
 ```java
 final Date now = new Date();
-final Date later = new Date(now.getTime() + TimeUnit.SECONDS.toMillis(30));
+final Date later = new Date(now.getTime() + totp.getTimeStep(TimeUnit.MILLISECONDS));
 
 System.out.format("Current password: %06d\n", totp.generateOneTimePassword(secretKey, now));
 System.out.format("Future password:  %06d\n", totp.generateOneTimePassword(secretKey, later));
+```
+
+…which produces (for one randomly-generated key):
+
+```
+Current password: 164092
+Future password:  046148
 ```
 
 ## License and copyright

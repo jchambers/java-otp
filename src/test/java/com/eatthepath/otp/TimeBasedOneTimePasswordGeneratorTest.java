@@ -20,23 +20,19 @@
 
 package com.eatthepath.otp;
 
-import static org.junit.Assert.*;
-
-import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import javax.crypto.spec.SecretKeySpec;
-
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertEquals;
 
 @RunWith(JUnitParamsRunner.class)
 public class TimeBasedOneTimePasswordGeneratorTest extends HmacOneTimePasswordGeneratorTest {
@@ -61,7 +57,7 @@ public class TimeBasedOneTimePasswordGeneratorTest extends HmacOneTimePasswordGe
      * Tests time-based one-time password generation using the test vectors from
      * <a href="https://tools.ietf.org/html/rfc6238#appendix-B">RFC&nbsp;6238, Appendix B</a>. Note that the RFC
      * incorrectly states that the same key is used for all test vectors. The
-     * <a href="https://www.rfc-editor.org/errata_search.php?rfc=6238&eid=2866">>errata</a> correctly points out that
+     * <a href="https://www.rfc-editor.org/errata_search.php?rfc=6238&eid=2866">errata</a> correctly points out that
      * different keys are used for each of the various HMAC algorithms.
      */
     @Test

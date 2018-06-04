@@ -20,13 +20,12 @@
 
 package com.eatthepath.otp;
 
+import javax.crypto.Mac;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
-
-import javax.crypto.Mac;
 
 /**
  * <p>Generates time-based one-time passwords (TOTP) as specified in
@@ -99,7 +98,7 @@ public class TimeBasedOneTimePasswordGenerator extends HmacOneTimePasswordGenera
      * happen except in cases of serious misconfiguration
      */
     public TimeBasedOneTimePasswordGenerator(final long timeStep, final TimeUnit timeStepUnit, final int passwordLength) throws NoSuchAlgorithmException {
-        this(timeStep, timeStepUnit, passwordLength, HmacOneTimePasswordGenerator.HOTP_HMAC_ALGORITHM);
+        this(timeStep, timeStepUnit, passwordLength, TOTP_ALGORITHM_HMAC_SHA1);
     }
 
     /**
