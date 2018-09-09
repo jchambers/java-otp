@@ -21,8 +21,8 @@
 package com.eatthepath.otp;
 
 import javax.crypto.Mac;
+import javax.crypto.SecretKey;
 import java.security.InvalidKeyException;
-import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -129,7 +129,7 @@ public class TimeBasedOneTimePasswordGenerator extends HmacOneTimePasswordGenera
     /**
      * Generates a one-time password using the given key and timestamp.
      *
-     * @param key a secret key to be used to generate the password
+     * @param secretKey a secret key to be used to generate the password
      * @param timestamp the timestamp for which to generate the password
      *
      * @return an integer representation of a one-time password; callers will need to format the password for display
@@ -137,8 +137,8 @@ public class TimeBasedOneTimePasswordGenerator extends HmacOneTimePasswordGenera
      *
      * @throws InvalidKeyException if the given key is inappropriate for initializing the {@link Mac} for this generator
      */
-    public int generateOneTimePassword(final Key key, final Date timestamp) throws InvalidKeyException {
-        return this.generateOneTimePassword(key, timestamp.getTime() / this.timeStepMillis);
+    public int generateOneTimePassword(final SecretKey secretKey, final Date timestamp) throws InvalidKeyException {
+        return this.generateOneTimePassword(secretKey, timestamp.getTime() / this.timeStepMillis);
     }
 
     /**

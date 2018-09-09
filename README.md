@@ -13,11 +13,11 @@ final TimeBasedOneTimePasswordGenerator totp = new TimeBasedOneTimePasswordGener
 To actually generate time-based one-time passwords, you'll need a secret key and a timestamp. Secure key management is beyond the scope of this document; for the purposes of an example, though, we'll generate a random key:
 
 ```java
-final Key secretKey;
+final SecretKey secretKey;
 {
     final KeyGenerator keyGenerator = KeyGenerator.getInstance(totp.getAlgorithm());
 
-    // HMAC-SHA1 and HMAC-SHA256 prefer 64-byte (512-bit) keys; HMAC-SHA512 prefers 128-byte (1024-bit) keys
+    // SHA-1 and SHA-256 prefer 64-byte (512-bit) keys; SHA512 prefers 128-byte (1024-bit) keys
     keyGenerator.init(512);
 
     secretKey = keyGenerator.generateKey();
