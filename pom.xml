@@ -4,7 +4,7 @@
 
     <groupId>com.eatthepath</groupId>
     <artifactId>java-otp</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.1.0</version>
     <name>java-otp</name>
     <description>A one-time password (HOTP and TOTP) library for Java</description>
     <inceptionYear>2016</inceptionYear>
