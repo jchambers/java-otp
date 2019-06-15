@@ -20,17 +20,19 @@
 
 package com.eatthepath.otp;
 
+import static org.junit.Assert.*;
+
+import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+
+import javax.crypto.spec.SecretKeySpec;
+
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
-
-import static org.junit.Assert.assertEquals;
 
 @RunWith(JUnitParamsRunner.class)
 public class HmacOneTimePasswordGeneratorTest {
@@ -81,7 +83,7 @@ public class HmacOneTimePasswordGeneratorTest {
     public void testGenerateOneTimePassword(final int counter, final int expectedOneTimePassword) throws Exception {
         final HmacOneTimePasswordGenerator hmacOneTimePasswordGenerator = this.getDefaultGenerator();
 
-        final SecretKey key = new SecretKeySpec("12345678901234567890".getBytes(StandardCharsets.US_ASCII), "RAW");
+        final Key key = new SecretKeySpec("12345678901234567890".getBytes(StandardCharsets.US_ASCII), "RAW");
         assertEquals(expectedOneTimePassword, hmacOneTimePasswordGenerator.generateOneTimePassword(key, counter));
     }
 

@@ -25,9 +25,9 @@ import junitparams.Parameters;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -87,10 +87,10 @@ public class TimeBasedOneTimePasswordGeneratorTest extends HmacOneTimePasswordGe
 
         final Date date = new Date(TimeUnit.SECONDS.toMillis(epochSeconds));
 
-        assertEquals(expectedOneTimePassword, totp.generateOneTimePassword(getSecretKeyForAlgorithm(algorithm), date));
+        assertEquals(expectedOneTimePassword, totp.generateOneTimePassword(getKeyForAlgorithm(algorithm), date));
     }
 
-    private static SecretKey getSecretKeyForAlgorithm(final String algorithm) {
+    private static Key getKeyForAlgorithm(final String algorithm) {
         final String keyString;
 
         switch (algorithm) {

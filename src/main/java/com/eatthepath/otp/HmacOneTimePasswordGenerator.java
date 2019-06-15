@@ -20,11 +20,12 @@
 
 package com.eatthepath.otp;
 
-import javax.crypto.Mac;
-import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
+import java.security.Key;
 import java.security.NoSuchAlgorithmException;
+
+import javax.crypto.Mac;
 
 /**
  * <p>Generates HMAC-based one-time passwords (HOTP) as specified in
@@ -122,7 +123,7 @@ public class HmacOneTimePasswordGenerator {
     /**
      * Generates a one-time password using the given key and counter value.
      *
-     * @param secretKey a secret key to be used to generate the password
+     * @param key a secret key to be used to generate the password
      * @param counter the counter value to be used to generate the password
      *
      * @return an integer representation of a one-time password; callers will need to format the password for display
@@ -130,12 +131,12 @@ public class HmacOneTimePasswordGenerator {
      *
      * @throws InvalidKeyException if the given key is inappropriate for initializing the {@link Mac} for this generator
      */
-    public int generateOneTimePassword(final SecretKey secretKey, final long counter) throws InvalidKeyException {
+    public int generateOneTimePassword(final Key key, final long counter) throws InvalidKeyException {
         final Mac mac;
 
         try {
             mac = Mac.getInstance(this.algorithm);
-            mac.init(secretKey);
+            mac.init(key);
         } catch (final NoSuchAlgorithmException e) {
             // This should never happen since we verify that the algorithm is legit in the constructor.
             throw new RuntimeException(e);
