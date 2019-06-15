@@ -31,20 +31,20 @@ public class ExampleApp {
     public static void main(final String[] args) throws NoSuchAlgorithmException, InvalidKeyException {
         final TimeBasedOneTimePasswordGenerator totp = new TimeBasedOneTimePasswordGenerator();
 
-        final Key secretKey;
+        final Key key;
         {
             final KeyGenerator keyGenerator = KeyGenerator.getInstance(totp.getAlgorithm());
 
             // SHA-1 and SHA-256 prefer 64-byte (512-bit) keys; SHA512 prefers 128-byte (1024-bit) keys
             keyGenerator.init(512);
 
-            secretKey = keyGenerator.generateKey();
+            key = keyGenerator.generateKey();
         }
 
         final Date now = new Date();
         final Date later = new Date(now.getTime() + totp.getTimeStep(TimeUnit.MILLISECONDS));
 
-        System.out.format("Current password: %06d\n", totp.generateOneTimePassword(secretKey, now));
-        System.out.format("Future password:  %06d\n", totp.generateOneTimePassword(secretKey, later));
+        System.out.format("Current password: %06d\n", totp.generateOneTimePassword(key, now));
+        System.out.format("Future password:  %06d\n", totp.generateOneTimePassword(key, later));
     }
 }
