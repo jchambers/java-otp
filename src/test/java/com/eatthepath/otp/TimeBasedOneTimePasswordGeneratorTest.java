@@ -20,10 +20,10 @@
 
 package com.eatthepath.otp;
 
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
@@ -31,11 +31,25 @@ import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-@RunWith(JUnitParamsRunner.class)
 public class TimeBasedOneTimePasswordGeneratorTest extends HmacOneTimePasswordGeneratorTest {
+
+    private static final String HMAC_SHA1_ALGORITHM = "HmacSHA1";
+    private static final String HMAC_SHA256_ALGORITHM = "HmacSHA256";
+    private static final String HMAC_SHA512_ALGORITHM = "HmacSHA512";
+
+    private static final Key HMAC_SHA1_KEY =
+            new SecretKeySpec("12345678901234567890".getBytes(StandardCharsets.US_ASCII), "RAW");
+
+    private static final Key HMAC_SHA256_KEY =
+            new SecretKeySpec("12345678901234567890123456789012".getBytes(StandardCharsets.US_ASCII), "RAW");
+
+    private static final Key HMAC_SHA512_KEY =
+            new SecretKeySpec("1234567890123456789012345678901234567890123456789012345678901234".getBytes(StandardCharsets.US_ASCII), "RAW");
 
     @Override
     protected HmacOneTimePasswordGenerator getDefaultGenerator() throws NoSuchAlgorithmException {
@@ -43,7 +57,7 @@ public class TimeBasedOneTimePasswordGeneratorTest extends HmacOneTimePasswordGe
     }
 
     @Test
-    public void testGetTimeStep() throws NoSuchAlgorithmException {
+    void testGetTimeStep() throws NoSuchAlgorithmException {
         final long timeStepSeconds = 97;
 
         final TimeBasedOneTimePasswordGenerator totp =
@@ -60,60 +74,38 @@ public class TimeBasedOneTimePasswordGeneratorTest extends HmacOneTimePasswordGe
      * <a href="https://www.rfc-editor.org/errata_search.php?rfc=6238&eid=2866">errata</a> correctly points out that
      * different keys are used for each of the various HMAC algorithms.
      */
-    @Test
-    @Parameters({
-            "HmacSHA1,   59,          94287082",
-            "HmacSHA1,   1111111109,   7081804",
-            "HmacSHA1,   1111111111,  14050471",
-            "HmacSHA1,   1234567890,  89005924",
-            "HmacSHA1,   2000000000,  69279037",
-            "HmacSHA1,   20000000000, 65353130",
-            "HmacSHA256, 59,          46119246",
-            "HmacSHA256, 1111111109,  68084774",
-            "HmacSHA256, 1111111111,  67062674",
-            "HmacSHA256, 1234567890,  91819424",
-            "HmacSHA256, 2000000000,  90698825",
-            "HmacSHA256, 20000000000, 77737706",
-            "HmacSHA512, 59,          90693936",
-            "HmacSHA512, 1111111109,  25091201",
-            "HmacSHA512, 1111111111,  99943326",
-            "HmacSHA512, 1234567890,  93441116",
-            "HmacSHA512, 2000000000,  38618901",
-            "HmacSHA512, 20000000000, 47863826" })
-    public void testGenerateOneTimePassword(final String algorithm, final long epochSeconds, final int expectedOneTimePassword) throws Exception {
+    @ParameterizedTest
+    @MethodSource("totpTestVectorSource")
+    void testGenerateOneTimePassword(final String algorithm, final Key key, final long epochSeconds, final int expectedOneTimePassword) throws Exception {
 
         final TimeBasedOneTimePasswordGenerator totp =
                 new TimeBasedOneTimePasswordGenerator(30, TimeUnit.SECONDS, 8, algorithm);
 
         final Date date = new Date(TimeUnit.SECONDS.toMillis(epochSeconds));
 
-        assertEquals(expectedOneTimePassword, totp.generateOneTimePassword(getKeyForAlgorithm(algorithm), date));
+        assertEquals(expectedOneTimePassword, totp.generateOneTimePassword(key, date));
     }
 
-    private static Key getKeyForAlgorithm(final String algorithm) {
-        final String keyString;
-
-        switch (algorithm) {
-            case "HmacSHA1": {
-                keyString = "12345678901234567890";
-                break;
-            }
-
-            case "HmacSHA256": {
-                keyString = "12345678901234567890123456789012";
-                break;
-            }
-
-            case "HmacSHA512": {
-                keyString = "1234567890123456789012345678901234567890123456789012345678901234";
-                break;
-            }
-
-            default: {
-                throw new IllegalArgumentException("Unexpected algorithm: " + algorithm);
-            }
-        }
-
-        return new SecretKeySpec(keyString.getBytes(StandardCharsets.US_ASCII), "RAW");
+    static Stream<Arguments> totpTestVectorSource() {
+        return Stream.of(
+                arguments(HMAC_SHA1_ALGORITHM,   HMAC_SHA1_KEY,            59L, 94287082),
+                arguments(HMAC_SHA1_ALGORITHM,   HMAC_SHA1_KEY,    1111111109L,  7081804),
+                arguments(HMAC_SHA1_ALGORITHM,   HMAC_SHA1_KEY,    1111111111L, 14050471),
+                arguments(HMAC_SHA1_ALGORITHM,   HMAC_SHA1_KEY,    1234567890L, 89005924),
+                arguments(HMAC_SHA1_ALGORITHM,   HMAC_SHA1_KEY,    2000000000L, 69279037),
+                arguments(HMAC_SHA1_ALGORITHM,   HMAC_SHA1_KEY,   20000000000L, 65353130),
+                arguments(HMAC_SHA256_ALGORITHM, HMAC_SHA256_KEY,          59L, 46119246),
+                arguments(HMAC_SHA256_ALGORITHM, HMAC_SHA256_KEY,  1111111109L, 68084774),
+                arguments(HMAC_SHA256_ALGORITHM, HMAC_SHA256_KEY,  1111111111L, 67062674),
+                arguments(HMAC_SHA256_ALGORITHM, HMAC_SHA256_KEY,  1234567890L, 91819424),
+                arguments(HMAC_SHA256_ALGORITHM, HMAC_SHA256_KEY,  2000000000L, 90698825),
+                arguments(HMAC_SHA256_ALGORITHM, HMAC_SHA256_KEY, 20000000000L, 77737706),
+                arguments(HMAC_SHA512_ALGORITHM, HMAC_SHA512_KEY,          59L, 90693936),
+                arguments(HMAC_SHA512_ALGORITHM, HMAC_SHA512_KEY,  1111111109L, 25091201),
+                arguments(HMAC_SHA512_ALGORITHM, HMAC_SHA512_KEY,  1111111111L, 99943326),
+                arguments(HMAC_SHA512_ALGORITHM, HMAC_SHA512_KEY,  1234567890L, 93441116),
+                arguments(HMAC_SHA512_ALGORITHM, HMAC_SHA512_KEY,  2000000000L, 38618901),
+                arguments(HMAC_SHA512_ALGORITHM, HMAC_SHA512_KEY, 20000000000L, 47863826)
+        );
     }
 }

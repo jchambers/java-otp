@@ -20,46 +20,50 @@
 
 package com.eatthepath.otp;
 
-import static org.junit.Assert.*;
-
-import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.util.stream.Stream;
 
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-@RunWith(JUnitParamsRunner.class)
 public class HmacOneTimePasswordGeneratorTest {
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testHmacOneTimePasswordGeneratorWithShortPasswordLength() throws NoSuchAlgorithmException {
-        new HmacOneTimePasswordGenerator(5);
-    }
+    private static final Key HOTP_KEY =
+            new SecretKeySpec("12345678901234567890".getBytes(StandardCharsets.US_ASCII), "RAW");
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testHmacOneTimePasswordGeneratorWithLongPasswordLength() throws NoSuchAlgorithmException {
-        new HmacOneTimePasswordGenerator(9);
-    }
-
-    @Test(expected = NoSuchAlgorithmException.class)
-    public void testHmacOneTimePasswordGeneratorWithBogusAlgorithm() throws NoSuchAlgorithmException {
-        new HmacOneTimePasswordGenerator(6, "Definitely not a real algorithm");
+    @Test
+    void testHmacOneTimePasswordGeneratorWithShortPasswordLength() {
+        assertThrows(IllegalArgumentException.class, () -> new HmacOneTimePasswordGenerator(5));
     }
 
     @Test
-    public void testGetPasswordLength() throws NoSuchAlgorithmException {
+    void testHmacOneTimePasswordGeneratorWithLongPasswordLength() {
+        assertThrows(IllegalArgumentException.class, () -> new HmacOneTimePasswordGenerator(9));
+    }
+
+    @Test
+    void testHmacOneTimePasswordGeneratorWithBogusAlgorithm() {
+        assertThrows(NoSuchAlgorithmException.class, () ->
+                new HmacOneTimePasswordGenerator(6, "Definitely not a real algorithm"));
+    }
+
+    @Test
+    void testGetPasswordLength() throws NoSuchAlgorithmException {
         final int passwordLength = 7;
         assertEquals(passwordLength, new HmacOneTimePasswordGenerator(passwordLength).getPasswordLength());
     }
 
     @Test
-    public void testGetAlgorithm() throws NoSuchAlgorithmException {
+    void testGetAlgorithm() throws NoSuchAlgorithmException {
         final String algorithm = "HmacSHA256";
         assertEquals(algorithm, new HmacOneTimePasswordGenerator(6, algorithm).getAlgorithm());
     }
@@ -68,23 +72,25 @@ public class HmacOneTimePasswordGeneratorTest {
      * Tests generation of one-time passwords using the test vectors from
      * <a href="https://tools.ietf.org/html/rfc4226#appendix-D">RFC&nbsp;4226, Appendix D</a>.
      */
-    @Test
-    @Parameters({
-            "0, 755224",
-            "1, 287082",
-            "2, 359152",
-            "3, 969429",
-            "4, 338314",
-            "5, 254676",
-            "6, 287922",
-            "7, 162583",
-            "8, 399871",
-            "9, 520489" })
-    public void testGenerateOneTimePassword(final int counter, final int expectedOneTimePassword) throws Exception {
-        final HmacOneTimePasswordGenerator hmacOneTimePasswordGenerator = this.getDefaultGenerator();
+    @ParameterizedTest
+    @MethodSource("hotpTestVectorSource")
+    void testGenerateOneTimePassword(final int counter, final int expectedOneTimePassword) throws Exception {
+        assertEquals(expectedOneTimePassword, this.getDefaultGenerator().generateOneTimePassword(HOTP_KEY, counter));
+    }
 
-        final Key key = new SecretKeySpec("12345678901234567890".getBytes(StandardCharsets.US_ASCII), "RAW");
-        assertEquals(expectedOneTimePassword, hmacOneTimePasswordGenerator.generateOneTimePassword(key, counter));
+    static Stream<Arguments> hotpTestVectorSource() {
+        return Stream.of(
+                arguments(0, 755224),
+                arguments(1, 287082),
+                arguments(2, 359152),
+                arguments(3, 969429),
+                arguments(4, 338314),
+                arguments(5, 254676),
+                arguments(6, 287922),
+                arguments(7, 162583),
+                arguments(8, 399871),
+                arguments(9, 520489)
+        );
     }
 
     protected HmacOneTimePasswordGenerator getDefaultGenerator() throws NoSuchAlgorithmException {
