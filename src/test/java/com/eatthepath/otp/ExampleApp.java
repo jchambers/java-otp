@@ -24,8 +24,7 @@ import javax.crypto.KeyGenerator;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
+import java.time.Instant;
 
 public class ExampleApp {
     public static void main(final String[] args) throws NoSuchAlgorithmException, InvalidKeyException {
@@ -41,8 +40,8 @@ public class ExampleApp {
             key = keyGenerator.generateKey();
         }
 
-        final Date now = new Date();
-        final Date later = new Date(now.getTime() + totp.getTimeStep(TimeUnit.MILLISECONDS));
+        final Instant now = Instant.now();
+        final Instant later = now.plus(totp.getTimeStep());
 
         System.out.format("Current password: %06d\n", totp.generateOneTimePassword(key, now));
         System.out.format("Future password:  %06d\n", totp.generateOneTimePassword(key, later));

@@ -21,7 +21,7 @@ final Key key;
 {
     final KeyGenerator keyGenerator = KeyGenerator.getInstance(totp.getAlgorithm());
 
-    // HMAC-SHA1 and HMAC-SHA256 prefer 64-byte (512-bit) keys; HMAC-SHA512 prefers 128-byte (1024-bit) keys
+    // SHA-1 and SHA-256 prefer 64-byte (512-bit) keys; SHA512 prefers 128-byte (1024-bit) keys
     keyGenerator.init(512);
 
     key = keyGenerator.generateKey();
@@ -31,8 +31,8 @@ final Key key;
 Armed with a secret key, we can deterministically generate one-time passwords for any timestamp:
 
 ```java
-final Date now = new Date();
-final Date later = new Date(now.getTime() + totp.getTimeStep(TimeUnit.MILLISECONDS));
+final Instant now = Instant.now();
+final Instant later = now.plus(totp.getTimeStep());
 
 System.out.format("Current password: %06d\n", totp.generateOneTimePassword(key, now));
 System.out.format("Future password:  %06d\n", totp.generateOneTimePassword(key, later));
