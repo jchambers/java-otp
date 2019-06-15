@@ -29,8 +29,8 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -58,13 +58,12 @@ public class TimeBasedOneTimePasswordGeneratorTest extends HmacOneTimePasswordGe
 
     @Test
     void testGetTimeStep() throws NoSuchAlgorithmException {
-        final long timeStepSeconds = 97;
+        final Duration timeStep = Duration.ofSeconds(97);
 
         final TimeBasedOneTimePasswordGenerator totp =
-                new TimeBasedOneTimePasswordGenerator(timeStepSeconds, TimeUnit.SECONDS);
+                new TimeBasedOneTimePasswordGenerator(timeStep);
 
-        assertEquals(timeStepSeconds, totp.getTimeStep(TimeUnit.SECONDS));
-        assertEquals(timeStepSeconds * 1000, totp.getTimeStep(TimeUnit.MILLISECONDS));
+        assertEquals(timeStep, totp.getTimeStep());
     }
 
     /**
@@ -79,11 +78,11 @@ public class TimeBasedOneTimePasswordGeneratorTest extends HmacOneTimePasswordGe
     void testGenerateOneTimePassword(final String algorithm, final Key key, final long epochSeconds, final int expectedOneTimePassword) throws Exception {
 
         final TimeBasedOneTimePasswordGenerator totp =
-                new TimeBasedOneTimePasswordGenerator(30, TimeUnit.SECONDS, 8, algorithm);
+                new TimeBasedOneTimePasswordGenerator(Duration.ofSeconds(30), 8, algorithm);
 
-        final Date date = new Date(TimeUnit.SECONDS.toMillis(epochSeconds));
+        final Instant timestamp = Instant.ofEpochSecond(epochSeconds);
 
-        assertEquals(expectedOneTimePassword, totp.generateOneTimePassword(key, date));
+        assertEquals(expectedOneTimePassword, totp.generateOneTimePassword(key, timestamp));
     }
 
     static Stream<Arguments> totpTestVectorSource() {

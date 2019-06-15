@@ -24,8 +24,8 @@ import javax.crypto.Mac;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
+import java.time.Instant;
 
 /**
  * <p>Generates time-based one-time passwords (TOTP) as specified in
@@ -37,7 +37,12 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="https://github.com/jchambers">Jon Chambers</a>
  */
 public class TimeBasedOneTimePasswordGenerator extends HmacOneTimePasswordGenerator {
-    private final long timeStepMillis;
+    private final Duration timeStep;
+
+    /**
+     * The default time-step for a time-based one-time password generator (30 seconds).
+     */
+    public static final Duration DEFAULT_TIME_STEP = Duration.ofSeconds(30);
 
     /**
      * A string identifier for the HMAC-SHA1 algorithm (required by HOTP and allowed by TOTP). HMAC-SHA1 is the default
@@ -65,7 +70,7 @@ public class TimeBasedOneTimePasswordGenerator extends HmacOneTimePasswordGenera
      * happen except in cases of serious misconfiguration
      */
     public TimeBasedOneTimePasswordGenerator() throws NoSuchAlgorithmException {
-        this(30, TimeUnit.SECONDS);
+        this(DEFAULT_TIME_STEP);
     }
 
     /**
@@ -73,23 +78,21 @@ public class TimeBasedOneTimePasswordGenerator extends HmacOneTimePasswordGenera
      * ({@value com.eatthepath.otp.HmacOneTimePasswordGenerator#DEFAULT_PASSWORD_LENGTH} decimal digits) and HMAC
      * algorithm ({@value com.eatthepath.otp.HmacOneTimePasswordGenerator#HOTP_HMAC_ALGORITHM}).
      *
-     * @param timeStep the magnitude of the time-step for this generator
-     * @param timeStepUnit the units for the the given time step
+     * @param timeStep the time-step for this generator
      *
      * @throws NoSuchAlgorithmException if the underlying JRE doesn't support the
      * {@value com.eatthepath.otp.HmacOneTimePasswordGenerator#HOTP_HMAC_ALGORITHM} algorithm, which should never
      * happen except in cases of serious misconfiguration
      */
-    public TimeBasedOneTimePasswordGenerator(final long timeStep, final TimeUnit timeStepUnit) throws NoSuchAlgorithmException {
-        this(timeStep, timeStepUnit, HmacOneTimePasswordGenerator.DEFAULT_PASSWORD_LENGTH);
+    public TimeBasedOneTimePasswordGenerator(final Duration timeStep) throws NoSuchAlgorithmException {
+        this(timeStep, HmacOneTimePasswordGenerator.DEFAULT_PASSWORD_LENGTH);
     }
 
     /**
      * Constructs a new time-based one-time password generator with the given time-step and password length and a
      * default HMAC algorithm ({@value com.eatthepath.otp.HmacOneTimePasswordGenerator#HOTP_HMAC_ALGORITHM}).
      *
-     * @param timeStep the magnitude of the time-step for this generator
-     * @param timeStepUnit the units for the the given time step
+     * @param timeStep the time-step for this generator
      * @param passwordLength the length, in decimal digits, of the one-time passwords to be generated; must be between
      * 6 and 8, inclusive
      *
@@ -97,16 +100,15 @@ public class TimeBasedOneTimePasswordGenerator extends HmacOneTimePasswordGenera
      * {@value com.eatthepath.otp.HmacOneTimePasswordGenerator#HOTP_HMAC_ALGORITHM} algorithm, which should never
      * happen except in cases of serious misconfiguration
      */
-    public TimeBasedOneTimePasswordGenerator(final long timeStep, final TimeUnit timeStepUnit, final int passwordLength) throws NoSuchAlgorithmException {
-        this(timeStep, timeStepUnit, passwordLength, TOTP_ALGORITHM_HMAC_SHA1);
+    public TimeBasedOneTimePasswordGenerator(final Duration timeStep, final int passwordLength) throws NoSuchAlgorithmException {
+        this(timeStep, passwordLength, TOTP_ALGORITHM_HMAC_SHA1);
     }
 
     /**
      * Constructs a new time-based one-time password generator with the given time-step, password length, and HMAC
      * algorithm.
      *
-     * @param timeStep the magnitude of the time-step for this generator
-     * @param timeStepUnit the units for the the given time step
+     * @param timeStep the time-step for this generator
      * @param passwordLength the length, in decimal digits, of the one-time passwords to be generated; must be between
      * 6 and 8, inclusive
      * @param algorithm the name of the {@link javax.crypto.Mac} algorithm to use when generating passwords; TOTP allows
@@ -120,10 +122,10 @@ public class TimeBasedOneTimePasswordGenerator extends HmacOneTimePasswordGenera
      * @see com.eatthepath.otp.TimeBasedOneTimePasswordGenerator#TOTP_ALGORITHM_HMAC_SHA256
      * @see com.eatthepath.otp.TimeBasedOneTimePasswordGenerator#TOTP_ALGORITHM_HMAC_SHA512
      */
-    public TimeBasedOneTimePasswordGenerator(final long timeStep, final TimeUnit timeStepUnit, final int passwordLength, final String algorithm) throws NoSuchAlgorithmException {
+    public TimeBasedOneTimePasswordGenerator(final Duration timeStep, final int passwordLength, final String algorithm) throws NoSuchAlgorithmException {
         super(passwordLength, algorithm);
 
-        this.timeStepMillis = timeStepUnit.toMillis(timeStep);
+        this.timeStep = timeStep;
     }
 
     /**
@@ -137,18 +139,16 @@ public class TimeBasedOneTimePasswordGenerator extends HmacOneTimePasswordGenera
      *
      * @throws InvalidKeyException if the given key is inappropriate for initializing the {@link Mac} for this generator
      */
-    public int generateOneTimePassword(final Key key, final Date timestamp) throws InvalidKeyException {
-        return this.generateOneTimePassword(key, timestamp.getTime() / this.timeStepMillis);
+    public int generateOneTimePassword(final Key key, final Instant timestamp) throws InvalidKeyException {
+        return this.generateOneTimePassword(key, timestamp.toEpochMilli() / this.timeStep.toMillis());
     }
 
     /**
      * Returns the time step used by this generator.
      *
-     * @param timeUnit the units of time in which to return the time step
-     *
-     * @return the time step used by this generator in the given units of time
+     * @return the time step used by this generator
      */
-    public long getTimeStep(final TimeUnit timeUnit) {
-        return timeUnit.convert(this.timeStepMillis, TimeUnit.MILLISECONDS);
+    public Duration getTimeStep() {
+        return this.timeStep;
     }
 }
