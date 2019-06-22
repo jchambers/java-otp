@@ -10,7 +10,7 @@ import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 
-@State(Scope.Thread)
+@State(Scope.Benchmark)
 public class HmacOneTimePasswordGeneratorBenchmark {
 
     private HmacOneTimePasswordGenerator hotp;
