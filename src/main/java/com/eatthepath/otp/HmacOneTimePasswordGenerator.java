@@ -31,13 +31,12 @@ import javax.crypto.Mac;
  * <p>Generates HMAC-based one-time passwords (HOTP) as specified in
  * <a href="https://tools.ietf.org/html/rfc4226">RFC&nbsp;4226</a>.</p>
  *
- * <p>{@code HmacOneTimePasswordGenerator} instances are thread-safe and may be shared and re-used across multiple
- * threads.</p>
+ * <p>{@code HmacOneTimePasswordGenerator} instances are thread-safe and may be shared between threads.</p>
  *
  * @author <a href="https://github.com/jchambers">Jon Chambers</a>
  */
 public class HmacOneTimePasswordGenerator {
-    private final String algorithm;
+    private final Mac mac;
     private final int passwordLength;
 
     private final int modDivisor;
@@ -92,6 +91,8 @@ public class HmacOneTimePasswordGenerator {
      * @throws NoSuchAlgorithmException if the given algorithm is not supported by the underlying JRE
      */
     protected HmacOneTimePasswordGenerator(final int passwordLength, final String algorithm) throws NoSuchAlgorithmException {
+        this.mac = Mac.getInstance(algorithm);
+
         switch (passwordLength) {
             case 6: {
                 this.modDivisor = 1_000_000;
@@ -114,10 +115,6 @@ public class HmacOneTimePasswordGenerator {
         }
 
         this.passwordLength = passwordLength;
-
-        // Our purpose here is just to throw an exception immediately if the algorithm is bogus.
-        Mac.getInstance(algorithm);
-        this.algorithm = algorithm;
     }
 
     /**
@@ -131,21 +128,13 @@ public class HmacOneTimePasswordGenerator {
      *
      * @throws InvalidKeyException if the given key is inappropriate for initializing the {@link Mac} for this generator
      */
-    public int generateOneTimePassword(final Key key, final long counter) throws InvalidKeyException {
-        final Mac mac;
-
-        try {
-            mac = Mac.getInstance(this.algorithm);
-            mac.init(key);
-        } catch (final NoSuchAlgorithmException e) {
-            // This should never happen since we verify that the algorithm is legit in the constructor.
-            throw new RuntimeException(e);
-        }
+    public synchronized int generateOneTimePassword(final Key key, final long counter) throws InvalidKeyException {
+        this.mac.init(key);
 
         final ByteBuffer buffer = ByteBuffer.allocate(8);
         buffer.putLong(0, counter);
 
-        final byte[] hmac = mac.doFinal(buffer.array());
+        final byte[] hmac = this.mac.doFinal(buffer.array());
         final int offset = hmac[hmac.length - 1] & 0x0f;
 
         for (int i = 0; i < 4; i++) {
@@ -174,6 +163,6 @@ public class HmacOneTimePasswordGenerator {
      * @return the name of the HMAC algorithm used by this generator
      */
     public String getAlgorithm() {
-        return this.algorithm;
+        return this.mac.getAlgorithm();
     }
 }

@@ -31,8 +31,7 @@ import java.time.Instant;
  * <p>Generates time-based one-time passwords (TOTP) as specified in
  * <a href="https://tools.ietf.org/html/rfc6238">RFC&nbsp;6238</a>.</p>
  *
- * <p>{@code TimeBasedOneTimePasswordGenerator} instances are thread-safe and may be shared and re-used across multiple
- * threads.</p>
+ * <p>{@code TimeBasedOneTimePasswordGenerator} instances are thread-safe and may be shared between threads.</p>
  *
  * @author <a href="https://github.com/jchambers">Jon Chambers</a>
  */
