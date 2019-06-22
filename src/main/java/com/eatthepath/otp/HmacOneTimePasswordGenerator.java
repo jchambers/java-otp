@@ -20,12 +20,11 @@
 
 package com.eatthepath.otp;
 
-import java.nio.ByteBuffer;
+import javax.crypto.Mac;
+import javax.crypto.ShortBufferException;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
-
-import javax.crypto.Mac;
 
 /**
  * <p>Generates HMAC-based one-time passwords (HOTP) as specified in
@@ -39,6 +38,7 @@ public class HmacOneTimePasswordGenerator {
     private final Mac mac;
     private final int passwordLength;
 
+    private final byte[] buffer;
     private final int modDivisor;
 
     /**
@@ -115,6 +115,9 @@ public class HmacOneTimePasswordGenerator {
         }
 
         this.passwordLength = passwordLength;
+
+        // We need at least 8 bytes to store the 64-bit counter value
+        this.buffer = new byte[Math.max(8, this.mac.getMacLength())];
     }
 
     /**
@@ -131,21 +134,32 @@ public class HmacOneTimePasswordGenerator {
     public synchronized int generateOneTimePassword(final Key key, final long counter) throws InvalidKeyException {
         this.mac.init(key);
 
-        final ByteBuffer buffer = ByteBuffer.allocate(8);
-        buffer.putLong(0, counter);
+        this.buffer[0] = (byte) ((counter & 0xff00000000000000L) >>> 56);
+        this.buffer[1] = (byte) ((counter & 0x00ff000000000000L) >>> 48);
+        this.buffer[2] = (byte) ((counter & 0x0000ff0000000000L) >>> 40);
+        this.buffer[3] = (byte) ((counter & 0x000000ff00000000L) >>> 32);
+        this.buffer[4] = (byte) ((counter & 0x00000000ff000000L) >>> 24);
+        this.buffer[5] = (byte) ((counter & 0x0000000000ff0000L) >>> 16);
+        this.buffer[6] = (byte) ((counter & 0x000000000000ff00L) >>> 8);
+        this.buffer[7] = (byte)  (counter & 0x00000000000000ffL);
 
-        final byte[] hmac = this.mac.doFinal(buffer.array());
-        final int offset = hmac[hmac.length - 1] & 0x0f;
+        this.mac.update(this.buffer, 0, 8);
 
-        for (int i = 0; i < 4; i++) {
-            // Note that we're re-using the first four bytes of the buffer here; we just ignore the latter four from
-            // here on out.
-            buffer.put(i, hmac[i + offset]);
+        try {
+            this.mac.doFinal(this.buffer, 0);
+        } catch (final ShortBufferException e) {
+            // We allocated the buffer to (at least) match the size of the MAC length at construction time, so this
+            // should never happen.
+            throw new RuntimeException(e);
         }
 
-        final int hotp = buffer.getInt(0) & 0x7fffffff;
+        final int offset = this.buffer[this.mac.getMacLength() - 1] & 0x0f;
 
-        return hotp % this.modDivisor;
+        return ((this.buffer[offset]     & 0x7f) << 24 |
+                (this.buffer[offset + 1] & 0xff) << 16 |
+                (this.buffer[offset + 2] & 0xff) <<  8 |
+                (this.buffer[offset + 3] & 0xff)) %
+                this.modDivisor;
     }
 
     /**
