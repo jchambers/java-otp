@@ -42,8 +42,6 @@ public class HmacOneTimePasswordGenerator {
 
     private final int modDivisor;
 
-    private final ThreadLocal<Mac> macThreadLocal;
-
     /**
      * The default length, in decimal digits, for one-time passwords.
      */
@@ -120,16 +118,6 @@ public class HmacOneTimePasswordGenerator {
         // Our purpose here is just to throw an exception immediately if the algorithm is bogus.
         Mac.getInstance(algorithm);
         this.algorithm = algorithm;
-
-        this.macThreadLocal = ThreadLocal.withInitial(() -> {
-            try {
-                return Mac.getInstance(algorithm);
-            } catch (final NoSuchAlgorithmException e) {
-                // This should never happen; we just checked to make sure we could instantiate a MAC with this
-                // algorithm, and if we made it this far, we know it worked.
-                throw new RuntimeException(e);
-            }
-        });
     }
 
     /**
@@ -144,8 +132,15 @@ public class HmacOneTimePasswordGenerator {
      * @throws InvalidKeyException if the given key is inappropriate for initializing the {@link Mac} for this generator
      */
     public int generateOneTimePassword(final Key key, final long counter) throws InvalidKeyException {
-        final Mac mac = this.macThreadLocal.get();
-        mac.init(key);
+        final Mac mac;
+
+        try {
+            mac = Mac.getInstance(this.algorithm);
+            mac.init(key);
+        } catch (final NoSuchAlgorithmException e) {
+            // This should never happen since we verify that the algorithm is legit in the constructor.
+            throw new RuntimeException(e);
+        }
 
         final ByteBuffer buffer = ByteBuffer.allocate(8);
         buffer.putLong(0, counter);
