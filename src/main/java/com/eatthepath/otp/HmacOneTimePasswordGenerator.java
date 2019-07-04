@@ -123,8 +123,8 @@ public class HmacOneTimePasswordGenerator {
     /**
      * Generates a one-time password using the given key and counter value.
      *
-     * @param key a secret key to be used to generate the password
-     * @param counter the counter value to be used to generate the password
+     * @param key the key to be used to generate the password
+     * @param counter the counter value for which to generate the password
      *
      * @return an integer representation of a one-time password; callers will need to format the password for display
      * on their own

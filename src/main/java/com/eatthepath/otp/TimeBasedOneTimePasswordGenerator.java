@@ -130,7 +130,7 @@ public class TimeBasedOneTimePasswordGenerator extends HmacOneTimePasswordGenera
     /**
      * Generates a one-time password using the given key and timestamp.
      *
-     * @param key a secret key to be used to generate the password
+     * @param key the key to be used to generate the password
      * @param timestamp the timestamp for which to generate the password
      *
      * @return an integer representation of a one-time password; callers will need to format the password for display
