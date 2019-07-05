@@ -1,6 +1,19 @@
-![Build status](https://travis-ci.org/jchambers/java-otp.svg?branch=master)
+[![Build status](https://travis-ci.org/jchambers/java-otp.svg?branch=master)](https://travis-ci.org/jchambers/java-otp)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.eatthepath/java-otp/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.eatthepath/java-otp)
 
 java-otp is a library for generating one-time passwords using the [HOTP (RFC 4226)](https://tools.ietf.org/html/rfc4226) or [TOTP (RFC 6238)](https://tools.ietf.org/html/rfc6238) standards in Java.
+
+## Getting java-otp
+
+You can download java-otp as a jar file (it has no dependencies) from the [GitHub releases page](https://github.com/jchambers/java-otp/releases) and add it to your project's classpath. If you're using Maven (or something that understands Maven dependencies) to build your project, you can add java-otp as a dependency:
+
+```xml
+<dependency>
+  <groupId>com.eatthepath</groupId>
+  <artifactId>java-otp</artifactId>
+  <version>0.2.0</version>
+</dependency>
+```
 
 ## System requirements
 
