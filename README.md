@@ -15,8 +15,6 @@ You can download java-otp as a jar file (it has no dependencies) from the [GitHu
 </dependency>
 ```
 
-## System requirements
-
 java-otp works with Java 8 or newer. If you need support for versions of Java older than Java 8, you may try using java-otp v0.1 (although it is no longer supported).
 
 ## Usage
