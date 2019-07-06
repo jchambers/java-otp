@@ -25,7 +25,7 @@ To demonstrate generating one-time passwords, we'll focus on the TOTP algorithm.
 final TimeBasedOneTimePasswordGenerator totp = new TimeBasedOneTimePasswordGenerator();
 ```
 
-To actually generate time-based one-time passwords, you'll need a secret key and a timestamp. Secure key management is beyond the scope of this document; for the purposes of an example, though, we'll generate a random key:
+To actually generate time-based one-time passwords, you'll need a key and a timestamp. Secure key management is beyond the scope of this document; for the purposes of an example, though, we'll generate a random key:
 
 ```java
 final Key key;
@@ -39,7 +39,7 @@ final Key key;
 }
 ```
 
-Armed with a secret key, we can deterministically generate one-time passwords for any timestamp:
+Armed with a key, we can deterministically generate one-time passwords for any timestamp:
 
 ```java
 final Instant now = Instant.now();
