@@ -115,9 +115,7 @@ public class HmacOneTimePasswordGenerator {
         }
 
         this.passwordLength = passwordLength;
-
-        // We need at least 8 bytes to store the 64-bit counter value
-        this.buffer = new byte[Math.max(8, this.mac.getMacLength())];
+        this.buffer = new byte[this.mac.getMacLength()];
     }
 
     /**
@@ -153,7 +151,7 @@ public class HmacOneTimePasswordGenerator {
             throw new RuntimeException(e);
         }
 
-        final int offset = this.buffer[this.mac.getMacLength() - 1] & 0x0f;
+        final int offset = this.buffer[this.buffer.length - 1] & 0x0f;
 
         return ((this.buffer[offset]     & 0x7f) << 24 |
                 (this.buffer[offset + 1] & 0xff) << 16 |
