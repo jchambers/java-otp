@@ -1,7 +1,7 @@
 [![Build status](https://travis-ci.org/jchambers/java-otp.svg?branch=master)](https://travis-ci.org/jchambers/java-otp)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.eatthepath/java-otp/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.eatthepath/java-otp)
 
-java-otp is a library for generating one-time passwords using the [HOTP (RFC 4226)](https://tools.ietf.org/html/rfc4226) or [TOTP (RFC 6238)](https://tools.ietf.org/html/rfc6238) standards in Java.
+java-otp is a Java library for generating [HOTP (RFC 4226)](https://tools.ietf.org/html/rfc4226) or [TOTP (RFC 6238)](https://tools.ietf.org/html/rfc6238) one-time passwords.
 
 ## Getting java-otp
 
