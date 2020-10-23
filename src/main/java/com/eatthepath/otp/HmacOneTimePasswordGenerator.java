@@ -25,6 +25,7 @@ import javax.crypto.ShortBufferException;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
+import java.util.Locale;
 
 /**
  * <p>Generates HMAC-based one-time passwords (HOTP) as specified in
@@ -40,6 +41,8 @@ public class HmacOneTimePasswordGenerator {
 
     private final byte[] buffer;
     private final int modDivisor;
+
+    private final String formatString;
 
     /**
      * The default length, in decimal digits, for one-time passwords.
@@ -96,16 +99,19 @@ public class HmacOneTimePasswordGenerator {
         switch (passwordLength) {
             case 6: {
                 this.modDivisor = 1_000_000;
+                this.formatString = "%06d";
                 break;
             }
 
             case 7: {
                 this.modDivisor = 10_000_000;
+                this.formatString = "%07d";
                 break;
             }
 
             case 8: {
                 this.modDivisor = 100_000_000;
+                this.formatString = "%08d";
                 break;
             }
 
@@ -158,6 +164,51 @@ public class HmacOneTimePasswordGenerator {
                 (this.buffer[offset + 2] & 0xff) <<  8 |
                 (this.buffer[offset + 3] & 0xff)) %
                 this.modDivisor;
+    }
+
+    /**
+     * Generates a one-time password using the given key and counter value and formats it as a string using the system
+     * default locale.
+     *
+     * @param key the key to be used to generate the password
+     * @param counter the counter value for which to generate the password
+     *
+     * @return a string representation of a one-time password
+     *
+     * @throws InvalidKeyException if the given key is inappropriate for initializing the {@link Mac} for this generator
+     *
+     * @see Locale#getDefault()
+     */
+    public String generateOneTimePasswordString(final Key key, final long counter) throws InvalidKeyException {
+        return this.generateOneTimePasswordString(key, counter, Locale.getDefault());
+    }
+
+    /**
+     * Generates a one-time password using the given key and counter value and formats it as a string using the given
+     * locale.
+     *
+     * @param key the key to be used to generate the password
+     * @param counter the counter value for which to generate the password
+     * @param locale the locale to apply during formatting
+     *
+     * @return a string representation of a one-time password
+     *
+     * @throws InvalidKeyException if the given key is inappropriate for initializing the {@link Mac} for this generator
+     */
+    public String generateOneTimePasswordString(final Key key, final long counter, final Locale locale) throws InvalidKeyException {
+        return this.formatOneTimePassword(generateOneTimePassword(key, counter), locale);
+    }
+
+    /**
+     * Formats a one-time password as a fixed-length string using the given locale.
+     *
+     * @param oneTimePassword the one-time password to format as a string
+     * @param locale the locale to apply during formatting
+     *
+     * @return a string representation of the given one-time password
+     */
+    protected String formatOneTimePassword(final int oneTimePassword, final Locale locale) {
+        return String.format(locale, formatString, oneTimePassword);
     }
 
     /**

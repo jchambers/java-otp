@@ -29,6 +29,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
+import java.util.Locale;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -73,12 +74,12 @@ public class HmacOneTimePasswordGeneratorTest {
      * <a href="https://tools.ietf.org/html/rfc4226#appendix-D">RFC&nbsp;4226, Appendix D</a>.
      */
     @ParameterizedTest
-    @MethodSource("hotpTestVectorSource")
+    @MethodSource("argumentsForTestGenerateOneTimePasswordHotp")
     void testGenerateOneTimePassword(final int counter, final int expectedOneTimePassword) throws Exception {
         assertEquals(expectedOneTimePassword, this.getDefaultGenerator().generateOneTimePassword(HOTP_KEY, counter));
     }
 
-    static Stream<Arguments> hotpTestVectorSource() {
+    private static Stream<Arguments> argumentsForTestGenerateOneTimePasswordHotp() {
         return Stream.of(
                 arguments(0, 755224),
                 arguments(1, 287082),
@@ -90,6 +91,52 @@ public class HmacOneTimePasswordGeneratorTest {
                 arguments(7, 162583),
                 arguments(8, 399871),
                 arguments(9, 520489)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("argumentsForTestGenerateOneTimePasswordStringHotp")
+    void testGenerateOneTimePasswordString(final int counter, final String expectedOneTimePassword) throws Exception {
+        Locale.setDefault(Locale.US);
+        assertEquals(expectedOneTimePassword, this.getDefaultGenerator().generateOneTimePasswordString(HOTP_KEY, counter));
+    }
+
+    private static Stream<Arguments> argumentsForTestGenerateOneTimePasswordStringHotp() {
+        return Stream.of(
+                arguments(0, "755224"),
+                arguments(1, "287082"),
+                arguments(2, "359152"),
+                arguments(3, "969429"),
+                arguments(4, "338314"),
+                arguments(5, "254676"),
+                arguments(6, "287922"),
+                arguments(7, "162583"),
+                arguments(8, "399871"),
+                arguments(9, "520489")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("argumentsForTestGenerateOneTimePasswordStringLocaleHotp")
+    void testGenerateOneTimePasswordStringLocale(final int counter, final Locale locale, final String expectedOneTimePassword) throws Exception {
+        Locale.setDefault(Locale.US);
+        assertEquals(expectedOneTimePassword, this.getDefaultGenerator().generateOneTimePasswordString(HOTP_KEY, counter, locale));
+    }
+
+    private static Stream<Arguments> argumentsForTestGenerateOneTimePasswordStringLocaleHotp() {
+        final Locale locale = Locale.forLanguageTag("hi-IN");
+
+        return Stream.of(
+                arguments(0, locale, "७५५२२४"),
+                arguments(1, locale, "२८७०८२"),
+                arguments(2, locale, "३५९१५२"),
+                arguments(3, locale, "९६९४२९"),
+                arguments(4, locale, "३३८३१४"),
+                arguments(5, locale, "२५४६७६"),
+                arguments(6, locale, "२८७९२२"),
+                arguments(7, locale, "१६२५८३"),
+                arguments(8, locale, "३९९८७१"),
+                arguments(9, locale, "५२०४८९")
         );
     }
 

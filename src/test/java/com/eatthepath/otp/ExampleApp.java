@@ -44,7 +44,7 @@ public class ExampleApp {
         final Instant now = Instant.now();
         final Instant later = now.plus(totp.getTimeStep());
 
-        System.out.format("Current password: %06d\n", totp.generateOneTimePassword(key, now));
-        System.out.format("Future password:  %06d\n", totp.generateOneTimePassword(key, later));
+        System.out.println("Current password: " + totp.generateOneTimePasswordString(key, now));
+        System.out.println("Future password:  " + totp.generateOneTimePasswordString(key, later));
     }
 }
