@@ -26,6 +26,7 @@ import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Locale;
 
 /**
  * <p>Generates time-based one-time passwords (TOTP) as specified in
@@ -140,6 +141,38 @@ public class TimeBasedOneTimePasswordGenerator extends HmacOneTimePasswordGenera
      */
     public int generateOneTimePassword(final Key key, final Instant timestamp) throws InvalidKeyException {
         return this.generateOneTimePassword(key, timestamp.toEpochMilli() / this.timeStep.toMillis());
+    }
+
+    /**
+     * Generates a one-time password using the given key and timestamp and formats it as a string with the system
+     * default locale.
+     *
+     * @param key the key to be used to generate the password
+     * @param timestamp the timestamp for which to generate the password
+     *
+     * @return a string representation of a one-time password
+     *
+     * @throws InvalidKeyException if the given key is inappropriate for initializing the {@link Mac} for this generator
+     *
+     * @see Locale#getDefault()
+     */
+    public String generateOneTimePasswordString(final Key key, final Instant timestamp) throws InvalidKeyException {
+        return this.generateOneTimePasswordString(key, timestamp, Locale.getDefault());
+    }
+
+    /**
+     * Generates a one-time password using the given key and timestamp and formats it as a string with the given locale.
+     *
+     * @param key the key to be used to generate the password
+     * @param timestamp the timestamp for which to generate the password
+     * @param locale the locale to apply during formatting
+     *
+     * @return a string representation of a one-time password
+     *
+     * @throws InvalidKeyException if the given key is inappropriate for initializing the {@link Mac} for this generator
+     */
+    public String generateOneTimePasswordString(final Key key, final Instant timestamp, final Locale locale) throws InvalidKeyException {
+        return this.formatOneTimePassword(this.generateOneTimePassword(key, timestamp), locale);
     }
 
     /**
