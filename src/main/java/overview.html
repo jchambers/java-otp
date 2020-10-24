@@ -28,7 +28,7 @@ THE SOFTWARE. -->
     <body>
         <p>java-otp is a library for generating one-time passwords using the <a href="https://tools.ietf.org/html/rfc4226">HOTP (RFC 4226)</a> or <a href="https://tools.ietf.org/html/rfc6238">TOTP (RFC 6238)</a> passwords in Java.</p>
 
-        <h2>Usage</h2>
+        <h1>Usage</h1>
 
         <p>To demonstrate generating one-time passwords, we'll focus on the TOTP algorithm. To create a TOTP generator with a default password length, time step, and HMAC algorithm:</p>
 
@@ -52,7 +52,7 @@ final Date later = new Date(now.getTime() + TimeUnit.SECONDS.toMillis(30));
 System.out.format("Current password: %06d\n", totp.generateOneTimePassword(secretKey, now));
 System.out.format("Future password:  %06d\n", totp.generateOneTimePassword(secretKey, later));</pre>
 
-        <h2>License and copyright</h2>
+        <h1>License and copyright</h1>
 
         <p>Copyright (c) 2016 Jon Chambers</p>
 
