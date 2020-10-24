@@ -34,8 +34,9 @@ public class ExampleApp {
         {
             final KeyGenerator keyGenerator = KeyGenerator.getInstance(totp.getAlgorithm());
 
-            // SHA-1 and SHA-256 prefer 64-byte (512-bit) keys; SHA512 prefers 128-byte (1024-bit) keys
-            keyGenerator.init(512);
+            // Key length should match the length of the HMAC output (160 bits for SHA-1, 256 bits
+            // for SHA-256, and 512 bits for SHA-512).
+            keyGenerator.init(160);
 
             key = keyGenerator.generateKey();
         }

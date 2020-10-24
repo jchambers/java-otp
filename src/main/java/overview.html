@@ -39,7 +39,7 @@ THE SOFTWARE. -->
         <pre>final Key secretKey;
 {
     final KeyGenerator keyGenerator = KeyGenerator.getInstance(totp.getAlgorithm());
-    keyGenerator.init(20);
+    keyGenerator.init(160);
 
     secretKey = keyGenerator.generateKey();
 }</pre>
