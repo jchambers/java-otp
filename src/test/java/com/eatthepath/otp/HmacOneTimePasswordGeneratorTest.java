@@ -79,6 +79,14 @@ public class HmacOneTimePasswordGeneratorTest {
         assertEquals(expectedOneTimePassword, this.getDefaultGenerator().generateOneTimePassword(HOTP_KEY, counter));
     }
 
+    @Test
+    void testGenerateOneTimePasswordRepeated() throws Exception {
+        final HmacOneTimePasswordGenerator hotpGenerator = new HmacOneTimePasswordGenerator();
+
+        assertEquals(755224, hotpGenerator.generateOneTimePassword(HOTP_KEY, 0));
+        assertEquals(287082, hotpGenerator.generateOneTimePassword(HOTP_KEY, 1));
+    }
+
     private static Stream<Arguments> argumentsForTestGenerateOneTimePasswordHotp() {
         return Stream.of(
                 arguments(0, 755224),
