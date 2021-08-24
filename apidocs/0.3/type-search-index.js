@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes","u":"allclasses-index.html"},{"p":"com.eatthepath.otp","l":"HmacOneTimePasswordGenerator"},{"p":"com.eatthepath.otp","l":"TimeBasedOneTimePasswordGenerator"}];updateSearchResults();
