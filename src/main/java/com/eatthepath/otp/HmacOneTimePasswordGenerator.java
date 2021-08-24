@@ -22,6 +22,7 @@ package com.eatthepath.otp;
 
 import javax.crypto.Mac;
 import javax.crypto.ShortBufferException;
+import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
@@ -39,7 +40,7 @@ public class HmacOneTimePasswordGenerator {
     private final Mac mac;
     private final int passwordLength;
 
-    private final byte[] buffer;
+    private final ByteBuffer buffer;
     private final int modDivisor;
 
     private final String formatString;
@@ -121,7 +122,7 @@ public class HmacOneTimePasswordGenerator {
         }
 
         this.passwordLength = passwordLength;
-        this.buffer = new byte[this.mac.getMacLength()];
+        this.buffer = ByteBuffer.allocate(this.mac.getMacLength());
     }
 
     /**
@@ -136,34 +137,23 @@ public class HmacOneTimePasswordGenerator {
      * @throws InvalidKeyException if the given key is inappropriate for initializing the {@link Mac} for this generator
      */
     public synchronized int generateOneTimePassword(final Key key, final long counter) throws InvalidKeyException {
-        this.mac.init(key);
-
-        this.buffer[0] = (byte) ((counter & 0xff00000000000000L) >>> 56);
-        this.buffer[1] = (byte) ((counter & 0x00ff000000000000L) >>> 48);
-        this.buffer[2] = (byte) ((counter & 0x0000ff0000000000L) >>> 40);
-        this.buffer[3] = (byte) ((counter & 0x000000ff00000000L) >>> 32);
-        this.buffer[4] = (byte) ((counter & 0x00000000ff000000L) >>> 24);
-        this.buffer[5] = (byte) ((counter & 0x0000000000ff0000L) >>> 16);
-        this.buffer[6] = (byte) ((counter & 0x000000000000ff00L) >>> 8);
-        this.buffer[7] = (byte)  (counter & 0x00000000000000ffL);
-
-        this.mac.update(this.buffer, 0, 8);
+        this.buffer.clear();
+        this.buffer.putLong(0, counter);
 
         try {
-            this.mac.doFinal(this.buffer, 0);
+            final byte[] array = this.buffer.array();
+
+            this.mac.init(key);
+            this.mac.update(array, 0, 8);
+            this.mac.doFinal(array, 0);
         } catch (final ShortBufferException e) {
             // We allocated the buffer to (at least) match the size of the MAC length at construction time, so this
             // should never happen.
             throw new RuntimeException(e);
         }
 
-        final int offset = this.buffer[this.buffer.length - 1] & 0x0f;
-
-        return ((this.buffer[offset]     & 0x7f) << 24 |
-                (this.buffer[offset + 1] & 0xff) << 16 |
-                (this.buffer[offset + 2] & 0xff) <<  8 |
-                (this.buffer[offset + 3] & 0xff)) %
-                this.modDivisor;
+        final int offset = this.buffer.get(this.buffer.capacity() - 1) & 0x0f;
+        return (this.buffer.getInt(offset) & 0x7fffffff) % this.modDivisor;
     }
 
     /**
