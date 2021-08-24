@@ -11,11 +11,15 @@ You can download java-otp as a jar file (it has no dependencies) from the [GitHu
 <dependency>
   <groupId>com.eatthepath</groupId>
   <artifactId>java-otp</artifactId>
-  <version>0.2.0</version>
+  <version>0.3.0</version>
 </dependency>
 ```
 
 java-otp works with Java 8 or newer. If you need support for versions of Java older than Java 8, you may try using [java-otp v0.1](https://github.com/jchambers/java-otp/releases/tag/java-otp-0.1.0) (although it is no longer supported).
+
+## Documentation
+
+The latest API docs are available at https://jchambers.github.io/java-otp/apidocs/latest/.
 
 ## Usage
 
