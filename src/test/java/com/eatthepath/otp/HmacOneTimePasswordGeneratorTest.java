@@ -29,6 +29,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.stream.Stream;
 
@@ -132,7 +133,7 @@ public class HmacOneTimePasswordGeneratorTest {
     }
 
     private static Stream<Arguments> argumentsForTestGenerateOneTimePasswordStringLocaleHotp() {
-        final Locale locale = Locale.forLanguageTag("hi-IN");
+        final Locale locale = Locale.forLanguageTag("hi-IN-u-nu-Deva");
 
         return Stream.of(
                 arguments(0, locale, "७५५२२४"),

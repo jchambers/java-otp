@@ -157,7 +157,7 @@ public class TimeBasedOneTimePasswordGeneratorTest extends HmacOneTimePasswordGe
     }
 
     private static Stream<Arguments> argumentsForTestGenerateOneTimePasswordStringLocaleTotp() {
-        final Locale locale = Locale.forLanguageTag("hi-IN");
+        final Locale locale = Locale.forLanguageTag("hi-IN-u-nu-Deva");
 
         return Stream.of(
                 arguments(HMAC_SHA1_ALGORITHM,   HMAC_SHA1_KEY,            59L, locale, "९४२८७०८२"),
