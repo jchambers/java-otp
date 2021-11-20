@@ -28,7 +28,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 import java.util.stream.Stream;
 
@@ -54,18 +53,18 @@ public class HmacOneTimePasswordGeneratorTest {
 
     @Test
     void testHmacOneTimePasswordGeneratorWithBogusAlgorithm() {
-        assertThrows(NoSuchAlgorithmException.class, () ->
+        assertThrows(NoSuchAlgorithmRuntimeException.class, () ->
                 new HmacOneTimePasswordGenerator(6, "Definitely not a real algorithm"));
     }
 
     @Test
-    void testGetPasswordLength() throws NoSuchAlgorithmException {
+    void testGetPasswordLength() {
         final int passwordLength = 7;
         assertEquals(passwordLength, new HmacOneTimePasswordGenerator(passwordLength).getPasswordLength());
     }
 
     @Test
-    void testGetAlgorithm() throws NoSuchAlgorithmException {
+    void testGetAlgorithm() {
         final String algorithm = "HmacSHA256";
         assertEquals(algorithm, new HmacOneTimePasswordGenerator(6, algorithm).getAlgorithm());
     }
@@ -149,7 +148,7 @@ public class HmacOneTimePasswordGeneratorTest {
         );
     }
 
-    protected HmacOneTimePasswordGenerator getDefaultGenerator() throws NoSuchAlgorithmException {
+    protected HmacOneTimePasswordGenerator getDefaultGenerator() {
         return new HmacOneTimePasswordGenerator();
     }
 }

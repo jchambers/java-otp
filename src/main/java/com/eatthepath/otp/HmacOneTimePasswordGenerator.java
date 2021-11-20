@@ -58,12 +58,8 @@ public class HmacOneTimePasswordGenerator {
     /**
      * Creates a new HMAC-based one-time password (HOTP) generator using a default password length
      * ({@value com.eatthepath.otp.HmacOneTimePasswordGenerator#DEFAULT_PASSWORD_LENGTH} digits).
-     *
-     * @throws NoSuchAlgorithmException if the underlying JRE doesn't support the
-     * {@value com.eatthepath.otp.HmacOneTimePasswordGenerator#HOTP_HMAC_ALGORITHM} algorithm, which should never
-     * happen except in cases of serious misconfiguration
      */
-    public HmacOneTimePasswordGenerator() throws NoSuchAlgorithmException {
+    public HmacOneTimePasswordGenerator() {
         this(DEFAULT_PASSWORD_LENGTH);
     }
 
@@ -72,12 +68,8 @@ public class HmacOneTimePasswordGenerator {
      *
      * @param passwordLength the length, in decimal digits, of the one-time passwords to be generated; must be between
      * 6 and 8, inclusive
-     *
-     * @throws NoSuchAlgorithmException if the underlying JRE doesn't support the
-     * {@value com.eatthepath.otp.HmacOneTimePasswordGenerator#HOTP_HMAC_ALGORITHM} algorithm, which should never
-     * happen except in cases of serious misconfiguration
      */
-    public HmacOneTimePasswordGenerator(final int passwordLength) throws NoSuchAlgorithmException {
+    public HmacOneTimePasswordGenerator(final int passwordLength) {
         this(passwordLength, HOTP_HMAC_ALGORITHM);
     }
 
@@ -92,10 +84,16 @@ public class HmacOneTimePasswordGenerator {
      * HOTP only allows for {@value com.eatthepath.otp.HmacOneTimePasswordGenerator#HOTP_HMAC_ALGORITHM}, but derived
      * standards like TOTP may allow for other algorithms
      *
-     * @throws NoSuchAlgorithmException if the given algorithm is not supported by the underlying JRE
+     * @throws NoSuchAlgorithmRuntimeException if the given algorithm is not supported by the underlying JRE
      */
-    protected HmacOneTimePasswordGenerator(final int passwordLength, final String algorithm) throws NoSuchAlgorithmException {
-        this.mac = Mac.getInstance(algorithm);
+    protected HmacOneTimePasswordGenerator(final int passwordLength, final String algorithm)
+            throws NoSuchAlgorithmRuntimeException {
+
+        try {
+            this.mac = Mac.getInstance(algorithm);
+        } catch (final NoSuchAlgorithmException e) {
+            throw new NoSuchAlgorithmRuntimeException(e);
+        }
 
         switch (passwordLength) {
             case 6: {
