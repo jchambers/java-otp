@@ -23,7 +23,6 @@ package com.eatthepath.otp;
 import javax.crypto.Mac;
 import java.security.InvalidKeyException;
 import java.security.Key;
-import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Locale;
@@ -53,23 +52,21 @@ public class TimeBasedOneTimePasswordGenerator extends HmacOneTimePasswordGenera
     /**
      * A string identifier for the HMAC-SHA256 algorithm (allowed by TOTP).
      */
+    @SuppressWarnings("unused")
     public static final String TOTP_ALGORITHM_HMAC_SHA256 = "HmacSHA256";
 
     /**
      * A string identifier for the HMAC-SHA512 algorithm (allowed by TOTP).
      */
+    @SuppressWarnings("unused")
     public static final String TOTP_ALGORITHM_HMAC_SHA512 = "HmacSHA512";
 
     /**
      * Constructs a new time-based one-time password generator with a default time-step (30 seconds), password length
      * ({@value com.eatthepath.otp.HmacOneTimePasswordGenerator#DEFAULT_PASSWORD_LENGTH} decimal digits), and HMAC
      * algorithm ({@value com.eatthepath.otp.HmacOneTimePasswordGenerator#HOTP_HMAC_ALGORITHM}).
-     *
-     * @throws NoSuchAlgorithmException if the underlying JRE doesn't support the
-     * {@value com.eatthepath.otp.HmacOneTimePasswordGenerator#HOTP_HMAC_ALGORITHM} algorithm, which should never
-     * happen except in cases of serious misconfiguration
      */
-    public TimeBasedOneTimePasswordGenerator() throws NoSuchAlgorithmException {
+    public TimeBasedOneTimePasswordGenerator() {
         this(DEFAULT_TIME_STEP);
     }
 
@@ -79,12 +76,8 @@ public class TimeBasedOneTimePasswordGenerator extends HmacOneTimePasswordGenera
      * algorithm ({@value com.eatthepath.otp.HmacOneTimePasswordGenerator#HOTP_HMAC_ALGORITHM}).
      *
      * @param timeStep the time-step for this generator
-     *
-     * @throws NoSuchAlgorithmException if the underlying JRE doesn't support the
-     * {@value com.eatthepath.otp.HmacOneTimePasswordGenerator#HOTP_HMAC_ALGORITHM} algorithm, which should never
-     * happen except in cases of serious misconfiguration
      */
-    public TimeBasedOneTimePasswordGenerator(final Duration timeStep) throws NoSuchAlgorithmException {
+    public TimeBasedOneTimePasswordGenerator(final Duration timeStep) {
         this(timeStep, HmacOneTimePasswordGenerator.DEFAULT_PASSWORD_LENGTH);
     }
 
@@ -95,12 +88,8 @@ public class TimeBasedOneTimePasswordGenerator extends HmacOneTimePasswordGenera
      * @param timeStep the time-step for this generator
      * @param passwordLength the length, in decimal digits, of the one-time passwords to be generated; must be between
      * 6 and 8, inclusive
-     *
-     * @throws NoSuchAlgorithmException if the underlying JRE doesn't support the
-     * {@value com.eatthepath.otp.HmacOneTimePasswordGenerator#HOTP_HMAC_ALGORITHM} algorithm, which should never
-     * happen except in cases of serious misconfiguration
      */
-    public TimeBasedOneTimePasswordGenerator(final Duration timeStep, final int passwordLength) throws NoSuchAlgorithmException {
+    public TimeBasedOneTimePasswordGenerator(final Duration timeStep, final int passwordLength) {
         this(timeStep, passwordLength, TOTP_ALGORITHM_HMAC_SHA1);
     }
 
@@ -112,19 +101,21 @@ public class TimeBasedOneTimePasswordGenerator extends HmacOneTimePasswordGenera
      * @param passwordLength the length, in decimal digits, of the one-time passwords to be generated; must be between
      * 6 and 8, inclusive
      * @param algorithm the name of the {@link javax.crypto.Mac} algorithm to use when generating passwords; TOTP allows
-     * for {@value com.eatthepath.otp.TimeBasedOneTimePasswordGenerator#TOTP_ALGORITHM_HMAC_SHA1},
-     * {@value com.eatthepath.otp.TimeBasedOneTimePasswordGenerator#TOTP_ALGORITHM_HMAC_SHA256}, and
-     * {@value com.eatthepath.otp.TimeBasedOneTimePasswordGenerator#TOTP_ALGORITHM_HMAC_SHA512}
+     * for {@value #TOTP_ALGORITHM_HMAC_SHA1}, {@value #TOTP_ALGORITHM_HMAC_SHA256}, and
+     * {@value #TOTP_ALGORITHM_HMAC_SHA512}
      *
-     * @throws NoSuchAlgorithmException if the underlying JRE doesn't support the given algorithm
+     * @throws NoSuchAlgorithmRuntimeException if the given algorithm is {@value #TOTP_ALGORITHM_HMAC_SHA512} and the
+     * JVM does not support that algorithm; all JVMs are required to support {@value #TOTP_ALGORITHM_HMAC_SHA1} and
+     * {@value #TOTP_ALGORITHM_HMAC_SHA256}, but are not required to support {@value #TOTP_ALGORITHM_HMAC_SHA512}
      *
-     * @see com.eatthepath.otp.TimeBasedOneTimePasswordGenerator#TOTP_ALGORITHM_HMAC_SHA1
-     * @see com.eatthepath.otp.TimeBasedOneTimePasswordGenerator#TOTP_ALGORITHM_HMAC_SHA256
-     * @see com.eatthepath.otp.TimeBasedOneTimePasswordGenerator#TOTP_ALGORITHM_HMAC_SHA512
+     * @see #TOTP_ALGORITHM_HMAC_SHA1
+     * @see #TOTP_ALGORITHM_HMAC_SHA256
+     * @see #TOTP_ALGORITHM_HMAC_SHA512
      */
-    public TimeBasedOneTimePasswordGenerator(final Duration timeStep, final int passwordLength, final String algorithm) throws NoSuchAlgorithmException {
-        super(passwordLength, algorithm);
+    public TimeBasedOneTimePasswordGenerator(final Duration timeStep, final int passwordLength, final String algorithm)
+            throws NoSuchAlgorithmRuntimeException {
 
+        super(passwordLength, algorithm);
         this.timeStep = timeStep;
     }
 

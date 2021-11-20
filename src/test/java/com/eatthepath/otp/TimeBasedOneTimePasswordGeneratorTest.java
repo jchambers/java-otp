@@ -28,7 +28,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Locale;
@@ -56,16 +55,14 @@ public class TimeBasedOneTimePasswordGeneratorTest extends HmacOneTimePasswordGe
                     TimeBasedOneTimePasswordGenerator.TOTP_ALGORITHM_HMAC_SHA512);
 
     @Override
-    protected HmacOneTimePasswordGenerator getDefaultGenerator() throws NoSuchAlgorithmException {
+    protected HmacOneTimePasswordGenerator getDefaultGenerator() {
         return new TimeBasedOneTimePasswordGenerator();
     }
 
     @Test
-    void testGetTimeStep() throws NoSuchAlgorithmException {
+    void testGetTimeStep() {
         final Duration timeStep = Duration.ofSeconds(97);
-
-        final TimeBasedOneTimePasswordGenerator totp =
-                new TimeBasedOneTimePasswordGenerator(timeStep);
+        final TimeBasedOneTimePasswordGenerator totp = new TimeBasedOneTimePasswordGenerator(timeStep);
 
         assertEquals(timeStep, totp.getTimeStep());
     }
