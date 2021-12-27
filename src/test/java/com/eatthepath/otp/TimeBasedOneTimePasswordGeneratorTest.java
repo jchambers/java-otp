@@ -44,13 +44,16 @@ public class TimeBasedOneTimePasswordGeneratorTest extends HmacOneTimePasswordGe
     private static final String HMAC_SHA512_ALGORITHM = "HmacSHA512";
 
     private static final Key HMAC_SHA1_KEY =
-            new SecretKeySpec("12345678901234567890".getBytes(StandardCharsets.US_ASCII), "RAW");
+            new SecretKeySpec("12345678901234567890".getBytes(StandardCharsets.US_ASCII),
+                    TimeBasedOneTimePasswordGenerator.TOTP_ALGORITHM_HMAC_SHA1);
 
     private static final Key HMAC_SHA256_KEY =
-            new SecretKeySpec("12345678901234567890123456789012".getBytes(StandardCharsets.US_ASCII), "RAW");
+            new SecretKeySpec("12345678901234567890123456789012".getBytes(StandardCharsets.US_ASCII),
+                    TimeBasedOneTimePasswordGenerator.TOTP_ALGORITHM_HMAC_SHA256);
 
     private static final Key HMAC_SHA512_KEY =
-            new SecretKeySpec("1234567890123456789012345678901234567890123456789012345678901234".getBytes(StandardCharsets.US_ASCII), "RAW");
+            new SecretKeySpec("1234567890123456789012345678901234567890123456789012345678901234".getBytes(StandardCharsets.US_ASCII),
+                    TimeBasedOneTimePasswordGenerator.TOTP_ALGORITHM_HMAC_SHA512);
 
     @Override
     protected HmacOneTimePasswordGenerator getDefaultGenerator() throws NoSuchAlgorithmException {

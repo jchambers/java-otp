@@ -29,7 +29,6 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.Locale;
 import java.util.stream.Stream;
 
@@ -40,7 +39,8 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 public class HmacOneTimePasswordGeneratorTest {
 
     private static final Key HOTP_KEY =
-            new SecretKeySpec("12345678901234567890".getBytes(StandardCharsets.US_ASCII), "RAW");
+            new SecretKeySpec("12345678901234567890".getBytes(StandardCharsets.US_ASCII),
+                    HmacOneTimePasswordGenerator.HOTP_HMAC_ALGORITHM);
 
     @Test
     void testHmacOneTimePasswordGeneratorWithShortPasswordLength() {
