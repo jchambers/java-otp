@@ -35,7 +35,8 @@ import java.util.Locale;
  *
  * @author <a href="https://github.com/jchambers">Jon Chambers</a>
  */
-public class TimeBasedOneTimePasswordGenerator extends HmacOneTimePasswordGenerator {
+public class TimeBasedOneTimePasswordGenerator {
+    private final HmacOneTimePasswordGenerator hotp;
     private final Duration timeStep;
 
     /**
@@ -115,7 +116,7 @@ public class TimeBasedOneTimePasswordGenerator extends HmacOneTimePasswordGenera
     public TimeBasedOneTimePasswordGenerator(final Duration timeStep, final int passwordLength, final String algorithm)
             throws NoSuchAlgorithmRuntimeException {
 
-        super(passwordLength, algorithm);
+        this.hotp = new HmacOneTimePasswordGenerator(passwordLength, algorithm);
         this.timeStep = timeStep;
     }
 
@@ -131,7 +132,7 @@ public class TimeBasedOneTimePasswordGenerator extends HmacOneTimePasswordGenera
      * @throws InvalidKeyException if the given key is inappropriate for initializing the {@link Mac} for this generator
      */
     public int generateOneTimePassword(final Key key, final Instant timestamp) throws InvalidKeyException {
-        return this.generateOneTimePassword(key, timestamp.toEpochMilli() / this.timeStep.toMillis());
+        return this.hotp.generateOneTimePassword(key, timestamp.toEpochMilli() / this.timeStep.toMillis());
     }
 
     /**
@@ -163,7 +164,7 @@ public class TimeBasedOneTimePasswordGenerator extends HmacOneTimePasswordGenera
      * @throws InvalidKeyException if the given key is inappropriate for initializing the {@link Mac} for this generator
      */
     public String generateOneTimePasswordString(final Key key, final Instant timestamp, final Locale locale) throws InvalidKeyException {
-        return this.formatOneTimePassword(this.generateOneTimePassword(key, timestamp), locale);
+        return this.hotp.formatOneTimePassword(this.generateOneTimePassword(key, timestamp), locale);
     }
 
     /**
@@ -173,5 +174,23 @@ public class TimeBasedOneTimePasswordGenerator extends HmacOneTimePasswordGenera
      */
     public Duration getTimeStep() {
         return this.timeStep;
+    }
+
+    /**
+     * Returns the length, in decimal digits, of passwords produced by this generator.
+     *
+     * @return the length, in decimal digits, of passwords produced by this generator
+     */
+    public int getPasswordLength() {
+        return this.hotp.getPasswordLength();
+    }
+
+    /**
+     * Returns the name of the HMAC algorithm used by this generator.
+     *
+     * @return the name of the HMAC algorithm used by this generator
+     */
+    public String getAlgorithm() {
+        return this.hotp.getAlgorithm();
     }
 }
