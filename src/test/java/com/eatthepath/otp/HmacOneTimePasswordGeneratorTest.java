@@ -76,7 +76,7 @@ public class HmacOneTimePasswordGeneratorTest {
     @ParameterizedTest
     @MethodSource("argumentsForTestGenerateOneTimePasswordHotp")
     void testGenerateOneTimePassword(final int counter, final int expectedOneTimePassword) throws Exception {
-        assertEquals(expectedOneTimePassword, this.getDefaultGenerator().generateOneTimePassword(HOTP_KEY, counter));
+        assertEquals(expectedOneTimePassword, new HmacOneTimePasswordGenerator().generateOneTimePassword(HOTP_KEY, counter));
     }
 
     @Test
@@ -106,7 +106,7 @@ public class HmacOneTimePasswordGeneratorTest {
     @MethodSource("argumentsForTestGenerateOneTimePasswordStringHotp")
     void testGenerateOneTimePasswordString(final int counter, final String expectedOneTimePassword) throws Exception {
         Locale.setDefault(Locale.US);
-        assertEquals(expectedOneTimePassword, this.getDefaultGenerator().generateOneTimePasswordString(HOTP_KEY, counter));
+        assertEquals(expectedOneTimePassword, new HmacOneTimePasswordGenerator().generateOneTimePasswordString(HOTP_KEY, counter));
     }
 
     private static Stream<Arguments> argumentsForTestGenerateOneTimePasswordStringHotp() {
@@ -128,7 +128,7 @@ public class HmacOneTimePasswordGeneratorTest {
     @MethodSource("argumentsForTestGenerateOneTimePasswordStringLocaleHotp")
     void testGenerateOneTimePasswordStringLocale(final int counter, final Locale locale, final String expectedOneTimePassword) throws Exception {
         Locale.setDefault(Locale.US);
-        assertEquals(expectedOneTimePassword, this.getDefaultGenerator().generateOneTimePasswordString(HOTP_KEY, counter, locale));
+        assertEquals(expectedOneTimePassword, new HmacOneTimePasswordGenerator().generateOneTimePasswordString(HOTP_KEY, counter, locale));
     }
 
     private static Stream<Arguments> argumentsForTestGenerateOneTimePasswordStringLocaleHotp() {
@@ -146,9 +146,5 @@ public class HmacOneTimePasswordGeneratorTest {
                 arguments(8, locale, "३९९८७१"),
                 arguments(9, locale, "५२०४८९")
         );
-    }
-
-    protected HmacOneTimePasswordGenerator getDefaultGenerator() {
-        return new HmacOneTimePasswordGenerator();
     }
 }

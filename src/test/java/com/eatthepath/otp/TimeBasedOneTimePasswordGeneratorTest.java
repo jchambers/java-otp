@@ -36,7 +36,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-public class TimeBasedOneTimePasswordGeneratorTest extends HmacOneTimePasswordGeneratorTest {
+public class TimeBasedOneTimePasswordGeneratorTest {
 
     private static final String HMAC_SHA1_ALGORITHM = "HmacSHA1";
     private static final String HMAC_SHA256_ALGORITHM = "HmacSHA256";
@@ -54,17 +54,22 @@ public class TimeBasedOneTimePasswordGeneratorTest extends HmacOneTimePasswordGe
             new SecretKeySpec("1234567890123456789012345678901234567890123456789012345678901234".getBytes(StandardCharsets.US_ASCII),
                     TimeBasedOneTimePasswordGenerator.TOTP_ALGORITHM_HMAC_SHA512);
 
-    @Override
-    protected HmacOneTimePasswordGenerator getDefaultGenerator() {
-        return new TimeBasedOneTimePasswordGenerator();
+    @Test
+    void testGetPasswordLength() {
+        final int passwordLength = 7;
+        assertEquals(passwordLength, new TimeBasedOneTimePasswordGenerator(Duration.ofSeconds(30), passwordLength).getPasswordLength());
+    }
+
+    @Test
+    void testGetAlgorithm() {
+        final String algorithm = TimeBasedOneTimePasswordGenerator.TOTP_ALGORITHM_HMAC_SHA256;
+        assertEquals(algorithm, new TimeBasedOneTimePasswordGenerator(Duration.ofSeconds(30), 6, algorithm).getAlgorithm());
     }
 
     @Test
     void testGetTimeStep() {
         final Duration timeStep = Duration.ofSeconds(97);
-        final TimeBasedOneTimePasswordGenerator totp = new TimeBasedOneTimePasswordGenerator(timeStep);
-
-        assertEquals(timeStep, totp.getTimeStep());
+        assertEquals(timeStep, new TimeBasedOneTimePasswordGenerator(timeStep).getTimeStep());
     }
 
     /**
