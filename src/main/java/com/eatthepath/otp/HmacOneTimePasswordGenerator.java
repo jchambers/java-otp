@@ -86,9 +86,7 @@ public class HmacOneTimePasswordGenerator {
      *
      * @throws NoSuchAlgorithmRuntimeException if the given algorithm is not supported by the underlying JRE
      */
-    protected HmacOneTimePasswordGenerator(final int passwordLength, final String algorithm)
-            throws NoSuchAlgorithmRuntimeException {
-
+    HmacOneTimePasswordGenerator(final int passwordLength, final String algorithm) throws NoSuchAlgorithmRuntimeException {
         try {
             this.mac = Mac.getInstance(algorithm);
         } catch (final NoSuchAlgorithmException e) {
@@ -195,7 +193,7 @@ public class HmacOneTimePasswordGenerator {
      *
      * @return a string representation of the given one-time password
      */
-    protected String formatOneTimePassword(final int oneTimePassword, final Locale locale) {
+    String formatOneTimePassword(final int oneTimePassword, final Locale locale) {
         return String.format(locale, formatString, oneTimePassword);
     }
 
