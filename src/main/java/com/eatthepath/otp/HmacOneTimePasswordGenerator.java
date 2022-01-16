@@ -53,7 +53,7 @@ public class HmacOneTimePasswordGenerator {
     /**
      * The HMAC algorithm specified by the HOTP standard.
      */
-    public static final String HOTP_HMAC_ALGORITHM = "HmacSHA1";
+    static final String HOTP_HMAC_ALGORITHM = "HmacSHA1";
 
     /**
      * Creates a new HMAC-based one-time password (HOTP) generator using a default password length

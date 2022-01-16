@@ -45,19 +45,18 @@ public class TimeBasedOneTimePasswordGenerator {
     public static final Duration DEFAULT_TIME_STEP = Duration.ofSeconds(30);
 
     /**
-     * A string identifier for the HMAC-SHA1 algorithm (required by HOTP and allowed by TOTP). HMAC-SHA1 is the default
-     * algorithm for TOTP.
+     * A string identifier for the HMAC-SHA1 algorithm; HMAC-SHA1 is the default algorithm for TOTP.
      */
     public static final String TOTP_ALGORITHM_HMAC_SHA1 = "HmacSHA1";
 
     /**
-     * A string identifier for the HMAC-SHA256 algorithm (allowed by TOTP).
+     * A string identifier for the HMAC-SHA256 algorithm.
      */
     @SuppressWarnings("unused")
     public static final String TOTP_ALGORITHM_HMAC_SHA256 = "HmacSHA256";
 
     /**
-     * A string identifier for the HMAC-SHA512 algorithm (allowed by TOTP).
+     * A string identifier for the HMAC-SHA512 algorithm.
      */
     @SuppressWarnings("unused")
     public static final String TOTP_ALGORITHM_HMAC_SHA512 = "HmacSHA512";
