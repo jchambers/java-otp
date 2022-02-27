@@ -31,7 +31,11 @@ import java.util.Locale;
  * <p>Generates time-based one-time passwords (TOTP) as specified in
  * <a href="https://tools.ietf.org/html/rfc6238">RFC&nbsp;6238</a>.</p>
  *
- * <p>{@code TimeBasedOneTimePasswordGenerator} instances are thread-safe and may be shared between threads.</p>
+ * <p>{@code TimeBasedOneTimePasswordGenerator} instances are thread-safe and may be shared between threads. Note that
+ * the {@link #generateOneTimePassword(Key, Instant)} method (and its relatives) are {@code synchronized}; in
+ * multi-threaded applications that make heavy use of a shared {@code TimeBasedOneTimePasswordGenerator} instance,
+ * synchronization may become a performance bottleneck. In that case, callers may benefit from using one
+ * {@code TimeBasedOneTimePasswordGenerator} instance per thread (for example, with a {@link ThreadLocal}).</p>
  *
  * @author <a href="https://github.com/jchambers">Jon Chambers</a>
  */
