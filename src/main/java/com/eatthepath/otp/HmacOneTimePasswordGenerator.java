@@ -32,7 +32,11 @@ import java.util.Locale;
  * <p>Generates HMAC-based one-time passwords (HOTP) as specified in
  * <a href="https://tools.ietf.org/html/rfc4226">RFC&nbsp;4226</a>.</p>
  *
- * <p>{@code HmacOneTimePasswordGenerator} instances are thread-safe and may be shared between threads.</p>
+ * <p>{@code HmacOneTimePasswordGenerator} instances are thread-safe and may be shared between threads. Note that the
+ * {@link #generateOneTimePassword(Key, long)} method (and its relatives) are {@code synchronized}; in multi-threaded
+ * applications that make heavy use of a shared {@code HmacOneTimePasswordGenerator} instance, synchronization may
+ * become a performance bottleneck. In that case, callers may benefit from using one
+ * {@code HmacOneTimePasswordGenerator} instance per thread (for example, with a {@link ThreadLocal}).</p>
  *
  * @author <a href="https://github.com/jchambers">Jon Chambers</a>
  */

@@ -63,6 +63,12 @@ Current password: 164092
 Future password:  046148
 ```
 
+## Performance and best practices
+
+One-time password generators are thread-safe and reusable. Generally, applications should treat one-time password generator instances as long-lived resources.
+
+The password-generating methods in a one-time password generator are `synchronized`. In multi-threaded applications that make heavy use of a shared one-time password generator instance, synchronization may become a performance bottleneck. In that case, callers may benefit from using one instance per thread (for example, by using a [`ThreadLocal`](https://docs.oracle.com/javase/8/docs/api/java/lang/ThreadLocal.html)).
+
 ## License and copyright
 
 java-otp is published under the [MIT License](https://opensource.org/licenses/MIT).
