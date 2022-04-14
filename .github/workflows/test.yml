@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         distribution: [ 'zulu', 'temurin' ]
-        java: [8, 11, 13, 15]
+        java: [8, 11, 17, 18]
       fail-fast: false
     name: JDK ${{ matrix.java }} (${{ matrix.distribution }})
 
