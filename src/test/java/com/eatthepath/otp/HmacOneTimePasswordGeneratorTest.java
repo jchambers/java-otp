@@ -27,8 +27,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
 import java.security.Key;
 import java.util.Locale;
+import java.util.Random;
+import java.util.concurrent.*;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,6 +42,19 @@ public class HmacOneTimePasswordGeneratorTest {
     private static final Key HOTP_KEY =
             new SecretKeySpec("12345678901234567890".getBytes(StandardCharsets.US_ASCII),
                     HmacOneTimePasswordGenerator.HOTP_HMAC_ALGORITHM);
+
+    private static final int[] TEST_VECTORS = new int[] {
+            755224,
+            287082,
+            359152,
+            969429,
+            338314,
+            254676,
+            287922,
+            162583,
+            399871,
+            520489
+    };
 
     @Test
     void testHmacOneTimePasswordGeneratorWithShortPasswordLength() {
@@ -84,23 +100,19 @@ public class HmacOneTimePasswordGeneratorTest {
     void testGenerateOneTimePasswordRepeated() throws Exception {
         final HmacOneTimePasswordGenerator hotpGenerator = new HmacOneTimePasswordGenerator();
 
-        assertEquals(755224, hotpGenerator.generateOneTimePassword(HOTP_KEY, 0));
-        assertEquals(287082, hotpGenerator.generateOneTimePassword(HOTP_KEY, 1));
+        for (int counter = 0; counter < TEST_VECTORS.length; counter++) {
+            assertEquals(TEST_VECTORS[counter], hotpGenerator.generateOneTimePassword(HOTP_KEY, counter));
+        }
     }
 
     private static Stream<Arguments> argumentsForTestGenerateOneTimePasswordHotp() {
-        return Stream.of(
-                arguments(0, 755224),
-                arguments(1, 287082),
-                arguments(2, 359152),
-                arguments(3, 969429),
-                arguments(4, 338314),
-                arguments(5, 254676),
-                arguments(6, 287922),
-                arguments(7, 162583),
-                arguments(8, 399871),
-                arguments(9, 520489)
-        );
+        final Stream.Builder<Arguments> streamBuilder = Stream.builder();
+
+        for (int counter = 0; counter < TEST_VECTORS.length; counter++) {
+            streamBuilder.add(Arguments.of(counter, TEST_VECTORS[counter]));
+        }
+
+        return streamBuilder.build();
     }
 
     @ParameterizedTest
@@ -111,18 +123,13 @@ public class HmacOneTimePasswordGeneratorTest {
     }
 
     private static Stream<Arguments> argumentsForTestGenerateOneTimePasswordStringHotp() {
-        return Stream.of(
-                arguments(0, "755224"),
-                arguments(1, "287082"),
-                arguments(2, "359152"),
-                arguments(3, "969429"),
-                arguments(4, "338314"),
-                arguments(5, "254676"),
-                arguments(6, "287922"),
-                arguments(7, "162583"),
-                arguments(8, "399871"),
-                arguments(9, "520489")
-        );
+        final Stream.Builder<Arguments> streamBuilder = Stream.builder();
+
+        for (int counter = 0; counter < TEST_VECTORS.length; counter++) {
+            streamBuilder.add(Arguments.of(counter, String.valueOf(TEST_VECTORS[counter])));
+        }
+
+        return streamBuilder.build();
     }
 
     @ParameterizedTest
@@ -147,5 +154,54 @@ public class HmacOneTimePasswordGeneratorTest {
                 arguments(8, locale, "३९९८७१"),
                 arguments(9, locale, "५२०४८९")
         );
+    }
+
+    @Test
+    void testConcurrent() throws InterruptedException {
+        final int iterations = 10_000;
+        final int threadCount = Runtime.getRuntime().availableProcessors() * 4;
+        final CountDownLatch threadStartLatch = new CountDownLatch(threadCount);
+        final ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+        @SuppressWarnings("unchecked") final CompletableFuture<Boolean>[] futures = new CompletableFuture[threadCount];
+
+        final HmacOneTimePasswordGenerator hotpGenerator = new HmacOneTimePasswordGenerator();
+
+        for (int thread = 0; thread < threadCount; thread++) {
+            futures[thread] = CompletableFuture.supplyAsync(() -> {
+                final Random random = new Random();
+                boolean allMatched = true;
+
+                threadStartLatch.countDown();
+
+                try {
+                    threadStartLatch.await();
+                } catch (final InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+                for (int i = 0; i < iterations; i++) {
+                    final int counter = random.nextInt(TEST_VECTORS.length);
+
+                    try {
+                        if (hotpGenerator.generateOneTimePassword(HOTP_KEY, counter) != TEST_VECTORS[counter]) {
+                            allMatched = false;
+                        }
+                    } catch (final InvalidKeyException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                return allMatched;
+            }, executorService);
+        }
+
+        CompletableFuture.allOf(futures).join();
+
+        for (final CompletableFuture<Boolean> future : futures) {
+            assertTrue(future.join());
+        }
+
+        executorService.shutdown();
+        assertTrue(executorService.awaitTermination(1, TimeUnit.SECONDS));
     }
 }
