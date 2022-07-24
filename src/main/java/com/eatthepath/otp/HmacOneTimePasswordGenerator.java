@@ -29,22 +29,16 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 
 /**
- * <p>Generates HMAC-based one-time passwords (HOTP) as specified in
- * <a href="https://tools.ietf.org/html/rfc4226">RFC&nbsp;4226</a>.</p>
- *
- * <p>{@code HmacOneTimePasswordGenerator} instances are thread-safe and may be shared between threads. Note that the
- * {@link #generateOneTimePassword(Key, long)} method (and its relatives) are {@code synchronized}; in multi-threaded
- * applications that make heavy use of a shared {@code HmacOneTimePasswordGenerator} instance, synchronization may
- * become a performance bottleneck. In that case, callers may benefit from using one
- * {@code HmacOneTimePasswordGenerator} instance per thread (for example, with a {@link ThreadLocal}).</p>
+ * Generates HMAC-based one-time passwords (HOTP) as specified in
+ * <a href="https://tools.ietf.org/html/rfc4226">RFC&nbsp;4226</a>. {@code HmacOneTimePasswordGenerator} instances are
+ * thread-safe and may be shared between threads.
  *
  * @author <a href="https://github.com/jchambers">Jon Chambers</a>
  */
 public class HmacOneTimePasswordGenerator {
-    private final Mac mac;
+    private final Mac prototypeMac;
     private final int passwordLength;
 
-    private final ByteBuffer buffer;
     private final int modDivisor;
 
     private final String formatString;
@@ -92,7 +86,7 @@ public class HmacOneTimePasswordGenerator {
      */
     HmacOneTimePasswordGenerator(final int passwordLength, final String algorithm) throws UncheckedNoSuchAlgorithmException {
         try {
-            this.mac = Mac.getInstance(algorithm);
+            this.prototypeMac = Mac.getInstance(algorithm);
         } catch (final NoSuchAlgorithmException e) {
             throw new UncheckedNoSuchAlgorithmException(e);
         }
@@ -122,7 +116,6 @@ public class HmacOneTimePasswordGenerator {
         }
 
         this.passwordLength = passwordLength;
-        this.buffer = ByteBuffer.allocate(this.mac.getMacLength());
     }
 
     /**
@@ -136,24 +129,41 @@ public class HmacOneTimePasswordGenerator {
      *
      * @throws InvalidKeyException if the given key is inappropriate for initializing the {@link Mac} for this generator
      */
-    public synchronized int generateOneTimePassword(final Key key, final long counter) throws InvalidKeyException {
-        this.buffer.clear();
-        this.buffer.putLong(0, counter);
+    public int generateOneTimePassword(final Key key, final long counter) throws InvalidKeyException {
+        final Mac mac = getMac();
+        final ByteBuffer buffer = ByteBuffer.allocate(mac.getMacLength());
+
+        buffer.putLong(0, counter);
 
         try {
-            final byte[] array = this.buffer.array();
+            final byte[] array = buffer.array();
 
-            this.mac.init(key);
-            this.mac.update(array, 0, 8);
-            this.mac.doFinal(array, 0);
+            mac.init(key);
+            mac.update(array, 0, 8);
+            mac.doFinal(array, 0);
         } catch (final ShortBufferException e) {
             // We allocated the buffer to (at least) match the size of the MAC length at construction time, so this
             // should never happen.
             throw new RuntimeException(e);
         }
 
-        final int offset = this.buffer.get(this.buffer.capacity() - 1) & 0x0f;
-        return (this.buffer.getInt(offset) & 0x7fffffff) % this.modDivisor;
+        final int offset = buffer.get(buffer.capacity() - 1) & 0x0f;
+        return (buffer.getInt(offset) & 0x7fffffff) % this.modDivisor;
+    }
+
+    private Mac getMac() {
+        try {
+            // Cloning is generally cheaper than `Mac.getInstance`, but isn't GUARANTEED to be supported.
+            return (Mac) this.prototypeMac.clone();
+        } catch (CloneNotSupportedException e) {
+            try {
+                return Mac.getInstance(this.prototypeMac.getAlgorithm());
+            } catch (final NoSuchAlgorithmException ex) {
+                // This should be impossible; we're getting the algorithm from a Mac that already exists, and so the
+                // algorithm must be supported.
+                throw new RuntimeException(ex);
+            }
+        }
     }
 
     /**
@@ -216,6 +226,6 @@ public class HmacOneTimePasswordGenerator {
      * @return the name of the HMAC algorithm used by this generator
      */
     public String getAlgorithm() {
-        return this.mac.getAlgorithm();
+        return this.prototypeMac.getAlgorithm();
     }
 }
