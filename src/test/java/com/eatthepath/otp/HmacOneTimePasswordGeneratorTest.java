@@ -31,8 +31,7 @@ import java.security.Key;
 import java.util.Locale;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class HmacOneTimePasswordGeneratorTest {
@@ -53,8 +52,10 @@ public class HmacOneTimePasswordGeneratorTest {
 
     @Test
     void testHmacOneTimePasswordGeneratorWithBogusAlgorithm() {
-        assertThrows(UncheckedNoSuchAlgorithmException.class, () ->
+        final UncheckedNoSuchAlgorithmException exception = assertThrows(UncheckedNoSuchAlgorithmException.class, () ->
                 new HmacOneTimePasswordGenerator(6, "Definitely not a real algorithm"));
+
+        assertNotNull(exception.getCause());
     }
 
     @Test
