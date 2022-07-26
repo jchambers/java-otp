@@ -3,14 +3,19 @@ package com.eatthepath.otp;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * A runtime exception that indicates that a requested MAC algorithm is not supported by the JVM.
+ * Wraps a {@link NoSuchAlgorithmException} with an unchecked exception.
  *
  * @author <a href="https://github.com/jchambers">Jon Chambers</a>
  */
-public class NoSuchAlgorithmRuntimeException extends RuntimeException {
+public class UncheckedNoSuchAlgorithmException extends RuntimeException {
 
-    NoSuchAlgorithmRuntimeException(final NoSuchAlgorithmException e) {
-        super(e);
+    /**
+     * Constructs a new unchecked {@code NoSuchAlgorithmException} instance.
+     *
+     * @param cause the underlying {@code NoSuchAlgorithmException}
+     */
+    UncheckedNoSuchAlgorithmException(final NoSuchAlgorithmException cause) {
+        super(cause);
     }
 
     /**

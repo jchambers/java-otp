@@ -53,7 +53,7 @@ public class HmacOneTimePasswordGeneratorTest {
 
     @Test
     void testHmacOneTimePasswordGeneratorWithBogusAlgorithm() {
-        assertThrows(NoSuchAlgorithmRuntimeException.class, () ->
+        assertThrows(UncheckedNoSuchAlgorithmException.class, () ->
                 new HmacOneTimePasswordGenerator(6, "Definitely not a real algorithm"));
     }
 

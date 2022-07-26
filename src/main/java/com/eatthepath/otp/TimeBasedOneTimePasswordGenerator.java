@@ -108,7 +108,7 @@ public class TimeBasedOneTimePasswordGenerator {
      * for {@value #TOTP_ALGORITHM_HMAC_SHA1}, {@value #TOTP_ALGORITHM_HMAC_SHA256}, and
      * {@value #TOTP_ALGORITHM_HMAC_SHA512}
      *
-     * @throws NoSuchAlgorithmRuntimeException if the given algorithm is {@value #TOTP_ALGORITHM_HMAC_SHA512} and the
+     * @throws UncheckedNoSuchAlgorithmException if the given algorithm is {@value #TOTP_ALGORITHM_HMAC_SHA512} and the
      * JVM does not support that algorithm; all JVMs are required to support {@value #TOTP_ALGORITHM_HMAC_SHA1} and
      * {@value #TOTP_ALGORITHM_HMAC_SHA256}, but are not required to support {@value #TOTP_ALGORITHM_HMAC_SHA512}
      *
@@ -117,7 +117,7 @@ public class TimeBasedOneTimePasswordGenerator {
      * @see #TOTP_ALGORITHM_HMAC_SHA512
      */
     public TimeBasedOneTimePasswordGenerator(final Duration timeStep, final int passwordLength, final String algorithm)
-            throws NoSuchAlgorithmRuntimeException {
+            throws UncheckedNoSuchAlgorithmException {
 
         this.hotp = new HmacOneTimePasswordGenerator(passwordLength, algorithm);
         this.timeStep = timeStep;

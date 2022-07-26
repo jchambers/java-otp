@@ -88,13 +88,13 @@ public class HmacOneTimePasswordGenerator {
      * HOTP only allows for {@value com.eatthepath.otp.HmacOneTimePasswordGenerator#HOTP_HMAC_ALGORITHM}, but derived
      * standards like TOTP may allow for other algorithms
      *
-     * @throws NoSuchAlgorithmRuntimeException if the given algorithm is not supported by the underlying JRE
+     * @throws UncheckedNoSuchAlgorithmException if the given algorithm is not supported by the underlying JRE
      */
-    HmacOneTimePasswordGenerator(final int passwordLength, final String algorithm) throws NoSuchAlgorithmRuntimeException {
+    HmacOneTimePasswordGenerator(final int passwordLength, final String algorithm) throws UncheckedNoSuchAlgorithmException {
         try {
             this.mac = Mac.getInstance(algorithm);
         } catch (final NoSuchAlgorithmException e) {
-            throw new NoSuchAlgorithmRuntimeException(e);
+            throw new UncheckedNoSuchAlgorithmException(e);
         }
 
         switch (passwordLength) {
