@@ -193,11 +193,10 @@ public class TimeBasedOneTimePasswordGeneratorTest {
     }
 
     private static void assumeAlgorithmSupported(final String algorithm) {
-        boolean algorithmSupported;
+        boolean algorithmSupported = true;
 
         try {
             Mac.getInstance(algorithm);
-            algorithmSupported = true;
         } catch (final NoSuchAlgorithmException e) {
             algorithmSupported = false;
         }
