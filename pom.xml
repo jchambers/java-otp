@@ -4,7 +4,7 @@
 
     <groupId>com.eatthepath</groupId>
     <artifactId>java-otp</artifactId>
-    <version>0.4.0</version>
+    <version>0.4.1-SNAPSHOT</version>
     <name>java-otp</name>
     <description>A one-time password (HOTP and TOTP) library for Java</description>
     <inceptionYear>2016</inceptionYear>
@@ -14,7 +14,7 @@
         <connection>scm:git:https://github.com/jchambers/java-otp.git</connection>
         <developerConnection>scm:git:git@github.com:jchambers/java-otp.git</developerConnection>
         <url>https://github.com/jchambers/java-otp</url>
-        <tag>java-otp-0.4.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <developers>
