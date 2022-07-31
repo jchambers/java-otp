@@ -11,7 +11,7 @@ You can download java-otp as a jar file (it has no dependencies) from the [GitHu
 <dependency>
   <groupId>com.eatthepath</groupId>
   <artifactId>java-otp</artifactId>
-  <version>0.3.1</version>
+  <version>0.4.0</version>
 </dependency>
 ```
 
