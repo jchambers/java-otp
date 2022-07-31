@@ -32,4 +32,9 @@ public class HmacOneTimePasswordGeneratorBenchmark {
     public int benchmarkGenerateOneTimePassword() throws InvalidKeyException {
         return this.hotp.generateOneTimePassword(this.key, this.counter++);
     }
+
+    @Benchmark
+    public String benchmarkGenerateOneTimePasswordString() throws InvalidKeyException {
+        return this.hotp.generateOneTimePasswordString(this.key, this.counter++);
+    }
 }
