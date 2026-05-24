@@ -119,6 +119,10 @@ public class TimeBasedOneTimePasswordGenerator {
     public TimeBasedOneTimePasswordGenerator(final Duration timeStep, final int passwordLength, final String algorithm)
             throws UncheckedNoSuchAlgorithmException {
 
+        if (timeStep.toMillis() <= 0) {
+            throw new IllegalArgumentException("Time step must be at least 1 millisecond");
+        }
+
         this.hotp = new HmacOneTimePasswordGenerator(passwordLength, algorithm);
         this.timeStep = timeStep;
     }

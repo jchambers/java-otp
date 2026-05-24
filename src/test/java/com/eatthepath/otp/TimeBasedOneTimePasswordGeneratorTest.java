@@ -36,6 +36,7 @@ import java.util.Locale;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
@@ -53,6 +54,13 @@ class TimeBasedOneTimePasswordGeneratorTest {
 
     private static final byte[] HMAC_SHA512_KEY_BYTES =
             "1234567890123456789012345678901234567890123456789012345678901234".getBytes(StandardCharsets.US_ASCII);
+
+    @Test
+    void timeBasedOneTimePasswordGeneratorWithNonPositiveTimeStamp() {
+        assertThrows(IllegalArgumentException.class, () -> new TimeBasedOneTimePasswordGenerator(Duration.ZERO));
+        assertThrows(IllegalArgumentException.class, () -> new TimeBasedOneTimePasswordGenerator(Duration.ofSeconds(-1)));
+        assertThrows(IllegalArgumentException.class, () -> new TimeBasedOneTimePasswordGenerator(Duration.ofNanos(1)));
+    }
 
     @Test
     void getPasswordLength() {
