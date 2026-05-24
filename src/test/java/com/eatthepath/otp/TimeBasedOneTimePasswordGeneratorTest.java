@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-public class TimeBasedOneTimePasswordGeneratorTest {
+class TimeBasedOneTimePasswordGeneratorTest {
 
     private static final String HMAC_SHA1_ALGORITHM = "HmacSHA1";
     private static final String HMAC_SHA256_ALGORITHM = "HmacSHA256";
@@ -55,19 +55,19 @@ public class TimeBasedOneTimePasswordGeneratorTest {
             "1234567890123456789012345678901234567890123456789012345678901234".getBytes(StandardCharsets.US_ASCII);
 
     @Test
-    void testGetPasswordLength() {
+    void getPasswordLength() {
         final int passwordLength = 7;
         assertEquals(passwordLength, new TimeBasedOneTimePasswordGenerator(Duration.ofSeconds(30), passwordLength).getPasswordLength());
     }
 
     @Test
-    void testGetAlgorithm() {
+    void getAlgorithm() {
         final String algorithm = TimeBasedOneTimePasswordGenerator.TOTP_ALGORITHM_HMAC_SHA256;
         assertEquals(algorithm, new TimeBasedOneTimePasswordGenerator(Duration.ofSeconds(30), 6, algorithm).getAlgorithm());
     }
 
     @Test
-    void testGetTimeStep() {
+    void getTimeStep() {
         final Duration timeStep = Duration.ofSeconds(97);
         assertEquals(timeStep, new TimeBasedOneTimePasswordGenerator(timeStep).getTimeStep());
     }
@@ -80,8 +80,8 @@ public class TimeBasedOneTimePasswordGeneratorTest {
      * different keys are used for each of the various HMAC algorithms.
      */
     @ParameterizedTest
-    @MethodSource("argumentsForTestGenerateOneTimePasswordTotp")
-    void testGenerateOneTimePasswordTotp(final String algorithm, final byte[] keyBytes, final long epochSeconds, final int expectedOneTimePassword) throws Exception {
+    @MethodSource
+    void generateOneTimePassword(final String algorithm, final byte[] keyBytes, final long epochSeconds, final int expectedOneTimePassword) throws Exception {
         assumeAlgorithmSupported(algorithm);
 
         final TimeBasedOneTimePasswordGenerator totp =
@@ -93,7 +93,7 @@ public class TimeBasedOneTimePasswordGeneratorTest {
         assertEquals(expectedOneTimePassword, totp.generateOneTimePassword(key, timestamp));
     }
 
-    private static Stream<Arguments> argumentsForTestGenerateOneTimePasswordTotp() {
+    private static Stream<Arguments> generateOneTimePassword() {
         return Stream.of(
                 arguments(HMAC_SHA1_ALGORITHM,   HMAC_SHA1_KEY_BYTES,            59L, 94287082),
                 arguments(HMAC_SHA1_ALGORITHM,   HMAC_SHA1_KEY_BYTES,    1111111109L,  7081804),
@@ -117,8 +117,8 @@ public class TimeBasedOneTimePasswordGeneratorTest {
     }
 
     @ParameterizedTest
-    @MethodSource("argumentsForTestGenerateOneTimePasswordStringTotp")
-    void testGenerateOneTimePasswordStringTotp(final String algorithm, final byte[] keyBytes, final long epochSeconds, final String expectedOneTimePassword) throws Exception {
+    @MethodSource
+    void generateOneTimePasswordString(final String algorithm, final byte[] keyBytes, final long epochSeconds, final String expectedOneTimePassword) throws Exception {
         assumeAlgorithmSupported(algorithm);
 
         final TimeBasedOneTimePasswordGenerator totp =
@@ -130,7 +130,7 @@ public class TimeBasedOneTimePasswordGeneratorTest {
         assertEquals(expectedOneTimePassword, totp.generateOneTimePasswordString(key, timestamp));
     }
 
-    private static Stream<Arguments> argumentsForTestGenerateOneTimePasswordStringTotp() {
+    private static Stream<Arguments> generateOneTimePasswordString() {
         return Stream.of(
                 arguments(HMAC_SHA1_ALGORITHM,   HMAC_SHA1_KEY_BYTES,            59L, "94287082"),
                 arguments(HMAC_SHA1_ALGORITHM,   HMAC_SHA1_KEY_BYTES,    1111111109L, "07081804"),
@@ -154,8 +154,8 @@ public class TimeBasedOneTimePasswordGeneratorTest {
     }
 
     @ParameterizedTest
-    @MethodSource("argumentsForTestGenerateOneTimePasswordStringLocaleTotp")
-    void testGenerateOneTimePasswordStringLocaleTotp(final String algorithm, final byte[] keyBytes, final long epochSeconds, final Locale locale, final String expectedOneTimePassword) throws Exception {
+    @MethodSource
+    void generateOneTimePasswordStringLocale(final String algorithm, final byte[] keyBytes, final long epochSeconds, final Locale locale, final String expectedOneTimePassword) throws Exception {
         assumeAlgorithmSupported(algorithm);
 
         final TimeBasedOneTimePasswordGenerator totp =
@@ -167,7 +167,7 @@ public class TimeBasedOneTimePasswordGeneratorTest {
         assertEquals(expectedOneTimePassword, totp.generateOneTimePasswordString(key, timestamp, locale));
     }
 
-    private static Stream<Arguments> argumentsForTestGenerateOneTimePasswordStringLocaleTotp() {
+    private static Stream<Arguments> generateOneTimePasswordStringLocale() {
         final Locale locale = Locale.forLanguageTag("hi-IN-u-nu-Deva");
 
         return Stream.of(
