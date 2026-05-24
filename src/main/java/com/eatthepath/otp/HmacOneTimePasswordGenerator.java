@@ -36,11 +36,9 @@ import java.util.Locale;
  * @author <a href="https://github.com/jchambers">Jon Chambers</a>
  */
 public class HmacOneTimePasswordGenerator {
-    private final Mac prototypeMac;
+    private final String algorithm;
     private final int passwordLength;
-
     private final int modDivisor;
-
     private final String formatString;
 
     /**
@@ -86,7 +84,14 @@ public class HmacOneTimePasswordGenerator {
      */
     HmacOneTimePasswordGenerator(final int passwordLength, final String algorithm) throws UncheckedNoSuchAlgorithmException {
         try {
-            this.prototypeMac = Mac.getInstance(algorithm);
+            // Fail fast if the requested algorithm isn't supported
+            final Mac mac = Mac.getInstance(algorithm);
+
+            if (mac.getMacLength() < 8) {
+                throw new IllegalArgumentException(algorithm + " has MAC length less than 8 bytes");
+            }
+
+            this.algorithm = algorithm;
         } catch (final NoSuchAlgorithmException e) {
             throw new UncheckedNoSuchAlgorithmException(e);
         }
@@ -142,27 +147,20 @@ public class HmacOneTimePasswordGenerator {
             mac.update(array, 0, 8);
             mac.doFinal(array, 0);
         } catch (final ShortBufferException e) {
-            // We allocated the buffer to (at least) match the size of the MAC length at construction time, so this
-            // should never happen.
-            throw new RuntimeException(e);
+            // We allocated the buffer's backing array to match the MAC length, so this should never happen.
+            throw new AssertionError("Generated MAC longer than self-reported MAC length", e);
         }
 
         final int offset = buffer.get(buffer.capacity() - 1) & 0x0f;
-        return (buffer.getInt(offset) & 0x7fffffff) % this.modDivisor;
+        return (buffer.getInt(offset) & 0x7fff_ffff) % this.modDivisor;
     }
 
     private Mac getMac() {
         try {
-            // Cloning is generally cheaper than `Mac.getInstance`, but isn't GUARANTEED to be supported.
-            return (Mac) this.prototypeMac.clone();
-        } catch (CloneNotSupportedException e) {
-            try {
-                return Mac.getInstance(this.prototypeMac.getAlgorithm());
-            } catch (final NoSuchAlgorithmException ex) {
-                // This should be impossible; we're getting the algorithm from a Mac that already exists, and so the
-                // algorithm must be supported.
-                throw new RuntimeException(ex);
-            }
+            return Mac.getInstance(algorithm);
+        } catch (final NoSuchAlgorithmException e) {
+            // We checked that we can instantiate a Mac with the given algorithm at construction time
+            throw new AssertionError("Previously-supported algorithm no longer found", e);
         }
     }
 
@@ -288,6 +286,6 @@ public class HmacOneTimePasswordGenerator {
      * @return the name of the HMAC algorithm used by this generator
      */
     public String getAlgorithm() {
-        return this.prototypeMac.getAlgorithm();
+        return this.algorithm;
     }
 }
