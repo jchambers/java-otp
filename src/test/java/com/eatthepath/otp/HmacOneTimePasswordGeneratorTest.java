@@ -29,6 +29,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.Key;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.concurrent.*;
@@ -145,6 +146,39 @@ class HmacOneTimePasswordGeneratorTest {
                 arguments(8, locale, "३९९८७१"),
                 arguments(9, locale, "५२०४८९")
         );
+    }
+
+    @Test
+    void validateOneTimePasswordInt() throws InvalidKeyException {
+        final HmacOneTimePasswordGenerator hotp = new HmacOneTimePasswordGenerator();
+        final long counter = ThreadLocalRandom.current().nextLong();
+
+        assertTrue(hotp.validateOneTimePassword(HOTP_KEY, counter, hotp.generateOneTimePassword(HOTP_KEY, counter)));
+        assertFalse(hotp.validateOneTimePassword(HOTP_KEY, counter, hotp.generateOneTimePassword(HOTP_KEY, counter + 1)));
+    }
+
+    @Test
+    void validateOneTimePasswordString() throws InvalidKeyException {
+        final HmacOneTimePasswordGenerator hotp = new HmacOneTimePasswordGenerator();
+
+        // A counter value of 36 with HOTP produces a one-time password of "003784" (or "००३७८४" in the hi-IN-u-nu-Deva
+        // locale). The leading zeros are an important edge case for string-based tests.
+        final long counter = 36;
+
+        assertTrue(hotp.validateOneTimePassword(HOTP_KEY, counter, "003784"));
+        assertFalse(hotp.validateOneTimePassword(HOTP_KEY, counter, "3784"));
+        assertFalse(hotp.validateOneTimePassword(HOTP_KEY, counter, "0003784"));
+        assertFalse(hotp.validateOneTimePassword(HOTP_KEY, counter, "0037840"));
+
+        assertTrue(hotp.validateOneTimePassword(HOTP_KEY, counter, "००३७८४"));
+        assertFalse(hotp.validateOneTimePassword(HOTP_KEY, counter, "३७८४"));
+        assertFalse(hotp.validateOneTimePassword(HOTP_KEY, counter, "०००३७८४"));
+        assertFalse(hotp.validateOneTimePassword(HOTP_KEY, counter, "००३७८४०"));
+
+        assertFalse(hotp.validateOneTimePassword(HOTP_KEY, counter, "cursed"));
+
+        assertThrows(NullPointerException.class, () ->
+            hotp.validateOneTimePassword(HOTP_KEY, counter, null));
     }
 
     @Test

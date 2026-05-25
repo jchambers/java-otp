@@ -139,7 +139,7 @@ public class TimeBasedOneTimePasswordGenerator {
      * @throws InvalidKeyException if the given key is inappropriate for initializing the {@link Mac} for this generator
      */
     public int generateOneTimePassword(final Key key, final Instant timestamp) throws InvalidKeyException {
-        return this.hotp.generateOneTimePassword(key, timestamp.toEpochMilli() / this.timeStep.toMillis());
+        return this.hotp.generateOneTimePassword(key, getCounterValue(timestamp));
     }
 
     /**
@@ -175,6 +175,50 @@ public class TimeBasedOneTimePasswordGenerator {
     }
 
     /**
+     * Checks whether a given one-time password matches the one-time password generated for the given key and timestamp.
+     * Note that this method simply checks equality of two one-time passwords; compensating for clock drift,
+     * throttling/rate-limiting, clock resynchronization, and so one are all beyond the scope of this method.
+     *
+     * @param key the key to be used to generate the password
+     * @param timestamp the timestamp for which to generate the password
+     * @param oneTimePassword the user-provided one-time password to check against the generated one-time password
+     *
+     * @return {@code true} if and only if the given one-time password matches the one-time password generated for the
+     * given key and timestamp; one-time password strings match if they have the correct number of digits (see
+     * {@link #getPasswordLength()}), can be parsed as an integer, and that integer matches the one-time password
+      * generated for the given key and timestamp
+     *
+     * @throws InvalidKeyException if the given key is inappropriate for initializing the {@link Mac} for this generator
+     * @throws NullPointerException if the given timestamp or one-time password is {@code null}
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc6238#section-5">TOTP: Time-Based One-Time Password Algorithm (RFC 6238) - Security Considerations</a>
+     */
+    public boolean validateOneTimePassword(final Key key, final Instant timestamp, final String oneTimePassword) throws InvalidKeyException {
+        return hotp.validateOneTimePassword(key, getCounterValue(timestamp), oneTimePassword);
+    }
+
+    /**
+     * Checks whether a given one-time password matches the one-time password generated for the given key and timestamp.
+     * Note that this method simply checks equality of two one-time passwords; compensating for clock drift,
+     * throttling/rate-limiting, clock resynchronization, and so one are all beyond the scope of this method.
+     *
+     * @param key the key to be used to generate the password
+     * @param timestamp the timestamp for which to generate the password
+     * @param oneTimePassword the user-provided one-time password to check against the generated one-time password
+     *
+     * @return {@code true} if and only if the given one-time password matches the one-time password generated for the
+     * given key and timestamp
+     *
+     * @throws InvalidKeyException if the given key is inappropriate for initializing the {@link Mac} for this generator
+     * @throws NullPointerException if the given timestamp is {@code null}
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc6238#section-5">TOTP: Time-Based One-Time Password Algorithm (RFC 6238) - Security Considerations</a>
+     */
+    public boolean validateOneTimePassword(final Key key, final Instant timestamp, final int oneTimePassword) throws InvalidKeyException {
+        return hotp.validateOneTimePassword(key, getCounterValue(timestamp), oneTimePassword);
+    }
+
+    /**
      * Returns the time step used by this generator.
      *
      * @return the time step used by this generator
@@ -199,5 +243,13 @@ public class TimeBasedOneTimePasswordGenerator {
      */
     public String getAlgorithm() {
         return this.hotp.getAlgorithm();
+    }
+
+    private long getCounterValue(final Instant timestamp) {
+        if (timestamp == null) {
+            throw new NullPointerException("Timestamp must not be null");
+        }
+
+        return timestamp.toEpochMilli() / this.timeStep.toMillis();
     }
 }
