@@ -223,12 +223,19 @@ public class HmacOneTimePasswordGenerator {
             throw new NullPointerException("One-time password must not be null");
         }
 
-        if (oneTimePassword.length() != this.passwordLength) {
-            return false;
-        }
+        // We COULD return early if the length doesn't match, but that could allow an attacker to learn the expected
+        // passowrd length by observing execution time. Arguably, the expected password length isn't a secret, but we
+        // can avoid revealing it here and choose to do so.
+        final boolean lengthMatches = oneTimePassword.length() == this.passwordLength;
 
         try {
-            return validateOneTimePassword(key, counter, Integer.parseInt(oneTimePassword));
+            final boolean passwordMatches = validateOneTimePassword(key, counter, Integer.parseInt(oneTimePassword));
+
+            // Again, this construction may seem a little odd, but the goal is to make sure this check happens in
+            // constant time relative to any secret data or internal state. `&` is a constant-time operation while `&&`
+            // can short-circuit. This construction means we evaluate both criteria and don't return early if the length
+            // of the given one-time password was incorrect.
+            return lengthMatches & passwordMatches;
         } catch (final NumberFormatException e) {
             return false;
         }
