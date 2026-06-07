@@ -56,6 +56,12 @@ class TimeBasedOneTimePasswordGeneratorTest {
             "1234567890123456789012345678901234567890123456789012345678901234".getBytes(StandardCharsets.US_ASCII);
 
     @Test
+    void timeBasedOneTimePasswordGeneratorWithUnsupportedAlgorithm() {
+        assertThrows(IllegalArgumentException.class,
+            () -> new TimeBasedOneTimePasswordGenerator(Duration.ofSeconds(30), 6, "Not a supported algorithm"));
+    }
+
+    @Test
     void timeBasedOneTimePasswordGeneratorWithNonPositiveTimeStamp() {
         assertThrows(IllegalArgumentException.class, () -> new TimeBasedOneTimePasswordGenerator(Duration.ZERO));
         assertThrows(IllegalArgumentException.class, () -> new TimeBasedOneTimePasswordGenerator(Duration.ofSeconds(-1)));
@@ -69,7 +75,7 @@ class TimeBasedOneTimePasswordGeneratorTest {
     }
 
     @Test
-    void getAlgorithm() {
+    void getAlgorithm() throws NoSuchAlgorithmException {
         final String algorithm = TimeBasedOneTimePasswordGenerator.TOTP_ALGORITHM_HMAC_SHA256;
         assertEquals(algorithm, new TimeBasedOneTimePasswordGenerator(Duration.ofSeconds(30), 6, algorithm).getAlgorithm());
     }

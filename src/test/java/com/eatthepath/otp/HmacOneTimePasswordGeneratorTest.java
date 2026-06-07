@@ -29,7 +29,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.Key;
-import java.time.Instant;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.concurrent.*;
@@ -70,10 +70,8 @@ class HmacOneTimePasswordGeneratorTest {
 
     @Test
     void hmacOneTimePasswordGeneratorWithBogusAlgorithm() {
-        final UncheckedNoSuchAlgorithmException exception = assertThrows(UncheckedNoSuchAlgorithmException.class, () ->
-                new HmacOneTimePasswordGenerator(6, "Definitely not a real algorithm"));
-
-        assertNotNull(exception.getCause());
+        assertThrows(NoSuchAlgorithmException.class, () ->
+            new HmacOneTimePasswordGenerator(6, "Definitely not a real algorithm"));
     }
 
     @Test
@@ -83,7 +81,7 @@ class HmacOneTimePasswordGeneratorTest {
     }
 
     @Test
-    void getAlgorithm() {
+    void getAlgorithm() throws NoSuchAlgorithmException {
         final String algorithm = "HmacSHA256";
         assertEquals(algorithm, new HmacOneTimePasswordGenerator(6, algorithm).getAlgorithm());
     }

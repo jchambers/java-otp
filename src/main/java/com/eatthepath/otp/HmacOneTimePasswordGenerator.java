@@ -66,7 +66,12 @@ public class HmacOneTimePasswordGenerator {
      * 6 and 8, inclusive
      */
     public HmacOneTimePasswordGenerator(final int passwordLength) {
-        this(passwordLength, HOTP_HMAC_ALGORITHM);
+        // Every implementation of the Java platform is required to support the HmacSHA1 Mac algorithm, so we don't need
+        // to check for a `NoSuchAlgorithm` exception
+        this.algorithm = HOTP_HMAC_ALGORITHM;
+        this.modDivisor = getModDivisor(passwordLength);
+        this.formatString = getFormatString(passwordLength);
+        this.passwordLength = passwordLength;
     }
 
     /**
@@ -80,47 +85,59 @@ public class HmacOneTimePasswordGenerator {
      * HOTP only allows for {@value com.eatthepath.otp.HmacOneTimePasswordGenerator#HOTP_HMAC_ALGORITHM}, but derived
      * standards like TOTP may allow for other algorithms
      *
-     * @throws UncheckedNoSuchAlgorithmException if the given algorithm is not supported by the underlying JRE
+     * @throws NoSuchAlgorithmException if the given algorithm is not supported by the underlying JRE
      */
-    HmacOneTimePasswordGenerator(final int passwordLength, final String algorithm) throws UncheckedNoSuchAlgorithmException {
-        try {
-            // Fail fast if the requested algorithm isn't supported
-            final Mac mac = Mac.getInstance(algorithm);
+    HmacOneTimePasswordGenerator(final int passwordLength, final String algorithm) throws NoSuchAlgorithmException {
+        // Fail fast if the requested algorithm isn't supported
+        final Mac mac = Mac.getInstance(algorithm);
 
-            if (mac.getMacLength() < 8) {
-                throw new IllegalArgumentException(algorithm + " has MAC length less than 8 bytes");
-            }
+        assert mac.getMacLength() >= 8;
 
-            this.algorithm = algorithm;
-        } catch (final NoSuchAlgorithmException e) {
-            throw new UncheckedNoSuchAlgorithmException(e);
-        }
+        this.algorithm = algorithm;
 
+        this.modDivisor = getModDivisor(passwordLength);
+        this.formatString = getFormatString(passwordLength);
+        this.passwordLength = passwordLength;
+    }
+
+    private static int getModDivisor(final int passwordLength) {
         switch (passwordLength) {
             case 6: {
-                this.modDivisor = 1_000_000;
-                this.formatString = "%06d";
-                break;
+                return 1_000_000;
             }
 
             case 7: {
-                this.modDivisor = 10_000_000;
-                this.formatString = "%07d";
-                break;
+                return 10_000_000;
             }
 
             case 8: {
-                this.modDivisor = 100_000_000;
-                this.formatString = "%08d";
-                break;
+                return 100_000_000;
             }
 
             default: {
                 throw new IllegalArgumentException("Password length must be between 6 and 8 digits.");
             }
         }
+    }
 
-        this.passwordLength = passwordLength;
+    private static String getFormatString(final int passwordLength) {
+        switch (passwordLength) {
+            case 6: {
+                return "%06d";
+            }
+
+            case 7: {
+                return "%07d";
+            }
+
+            case 8: {
+                return "%08d";
+            }
+
+            default: {
+                throw new IllegalArgumentException("Password length must be between 6 and 8 digits.");
+            }
+        }
     }
 
     /**
