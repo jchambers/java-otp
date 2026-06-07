@@ -23,9 +23,11 @@ package com.eatthepath.otp;
 import javax.crypto.Mac;
 import java.security.InvalidKeyException;
 import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Locale;
+import java.util.stream.Stream;
 
 /**
  * <p>Generates time-based one-time passwords (TOTP) as specified in
@@ -94,7 +96,13 @@ public class TimeBasedOneTimePasswordGenerator {
      * 6 and 8, inclusive
      */
     public TimeBasedOneTimePasswordGenerator(final Duration timeStep, final int passwordLength) {
-        this(timeStep, passwordLength, TOTP_ALGORITHM_HMAC_SHA1);
+      try {
+        this.hotp = new HmacOneTimePasswordGenerator(passwordLength, TOTP_ALGORITHM_HMAC_SHA1);
+      } catch (final NoSuchAlgorithmException e) {
+        throw new AssertionError("Every implementation of the Java platform is required to support the HmacSHA1 Mac algorithm", e);
+      }
+
+      this.timeStep = validateTimeStep(timeStep);
     }
 
     /**
@@ -108,8 +116,10 @@ public class TimeBasedOneTimePasswordGenerator {
      * for {@value #TOTP_ALGORITHM_HMAC_SHA1}, {@value #TOTP_ALGORITHM_HMAC_SHA256}, and
      * {@value #TOTP_ALGORITHM_HMAC_SHA512}
      *
-     * @throws UncheckedNoSuchAlgorithmException if the given algorithm is {@value #TOTP_ALGORITHM_HMAC_SHA512} and the
-     * JVM does not support that algorithm; all JVMs are required to support {@value #TOTP_ALGORITHM_HMAC_SHA1} and
+     * @throws IllegalArgumentException if the given algorithm is not an algorithm allowed by RFC&nbsp;6238 (i.e.
+     * {@value #TOTP_ALGORITHM_HMAC_SHA1}, {@value TOTP_ALGORITHM_HMAC_SHA256}, or {@value TOTP_ALGORITHM_HMAC_SHA512})
+     * @throws NoSuchAlgorithmException if the given algorithm is {@value #TOTP_ALGORITHM_HMAC_SHA512} and the JVM does
+     * not support that algorithm; all JVMs are required to support {@value #TOTP_ALGORITHM_HMAC_SHA1} and
      * {@value #TOTP_ALGORITHM_HMAC_SHA256}, but are not required to support {@value #TOTP_ALGORITHM_HMAC_SHA512}
      *
      * @see #TOTP_ALGORITHM_HMAC_SHA1
@@ -117,14 +127,24 @@ public class TimeBasedOneTimePasswordGenerator {
      * @see #TOTP_ALGORITHM_HMAC_SHA512
      */
     public TimeBasedOneTimePasswordGenerator(final Duration timeStep, final int passwordLength, final String algorithm)
-            throws UncheckedNoSuchAlgorithmException {
+            throws NoSuchAlgorithmException {
 
+        if (Stream.of(TOTP_ALGORITHM_HMAC_SHA1, TOTP_ALGORITHM_HMAC_SHA256, TOTP_ALGORITHM_HMAC_SHA512)
+            .noneMatch(supportedAlgorithm -> supportedAlgorithm.equals(algorithm))) {
+
+            throw new IllegalArgumentException("TOTP requires an algorithm of \"HmacSHA1\", \"HmacSHA256\", or \"HmacSHA512\"");
+        }
+
+        this.hotp = new HmacOneTimePasswordGenerator(passwordLength, algorithm);
+        this.timeStep = validateTimeStep(timeStep);
+    }
+
+    private static Duration validateTimeStep(final Duration timeStep) {
         if (timeStep.toMillis() <= 0) {
             throw new IllegalArgumentException("Time step must be at least 1 millisecond");
         }
 
-        this.hotp = new HmacOneTimePasswordGenerator(passwordLength, algorithm);
-        this.timeStep = timeStep;
+        return timeStep;
     }
 
     /**
