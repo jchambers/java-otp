@@ -28,6 +28,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
@@ -35,8 +36,7 @@ import java.time.Instant;
 import java.util.Locale;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
@@ -198,6 +198,50 @@ class TimeBasedOneTimePasswordGeneratorTest {
                 arguments(HMAC_SHA512_ALGORITHM, HMAC_SHA512_KEY_BYTES,  2000000000L, locale, "३८६१८९०१"),
                 arguments(HMAC_SHA512_ALGORITHM, HMAC_SHA512_KEY_BYTES, 20000000000L, locale, "४७८६३८२६")
         );
+    }
+
+    @Test
+    void validateOneTimePasswordInt() throws InvalidKeyException {
+        final TimeBasedOneTimePasswordGenerator totp = new TimeBasedOneTimePasswordGenerator();
+        final Instant timestamp = Instant.now();
+        final Key key =
+            new SecretKeySpec(HMAC_SHA1_KEY_BYTES, TimeBasedOneTimePasswordGenerator.TOTP_ALGORITHM_HMAC_SHA1);
+
+        assertTrue(totp.validateOneTimePassword(key, timestamp, totp.generateOneTimePassword(key, timestamp)));
+        assertFalse(totp.validateOneTimePassword(key, timestamp, totp.generateOneTimePassword(key, timestamp.plus(totp.getTimeStep()))));
+
+        assertThrows(NullPointerException.class, () ->
+            totp.validateOneTimePassword(key, null, totp.generateOneTimePassword(key, timestamp)));
+    }
+
+    @Test
+    void validateOneTimePasswordString() throws InvalidKeyException {
+        final TimeBasedOneTimePasswordGenerator totp = new TimeBasedOneTimePasswordGenerator();
+        final Key key =
+            new SecretKeySpec(HMAC_SHA1_KEY_BYTES, TimeBasedOneTimePasswordGenerator.TOTP_ALGORITHM_HMAC_SHA1);
+
+        // A timestamp of 1970-01-01T00:18:00Z with a default TOTP generator produces a one-time password of "003784"
+        // (or "००३७८४" in the hi-IN-u-nu-Deva locale). The leading zeros are an important edge case for string-based
+        // tests.
+        final Instant timestamp = Instant.parse("1970-01-01T00:18:00Z");
+
+        assertTrue(totp.validateOneTimePassword(key, timestamp, "003784"));
+        assertFalse(totp.validateOneTimePassword(key, timestamp, "3784"));
+        assertFalse(totp.validateOneTimePassword(key, timestamp, "0003784"));
+        assertFalse(totp.validateOneTimePassword(key, timestamp, "0037840"));
+
+        assertTrue(totp.validateOneTimePassword(key, timestamp, "००३७८४"));
+        assertFalse(totp.validateOneTimePassword(key, timestamp, "३७८४"));
+        assertFalse(totp.validateOneTimePassword(key, timestamp, "०००३७८४"));
+        assertFalse(totp.validateOneTimePassword(key, timestamp, "००३७८४०"));
+
+        assertFalse(totp.validateOneTimePassword(key, timestamp, "cursed"));
+
+        assertThrows(NullPointerException.class, () ->
+            totp.validateOneTimePassword(key, timestamp, null));
+
+        assertThrows(NullPointerException.class, () ->
+            totp.validateOneTimePassword(key, null, "003784"));
     }
 
     private static void assumeAlgorithmSupported(final String algorithm) {
