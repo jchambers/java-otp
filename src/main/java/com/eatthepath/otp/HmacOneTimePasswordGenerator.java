@@ -91,7 +91,9 @@ public class HmacOneTimePasswordGenerator {
         // Fail fast if the requested algorithm isn't supported
         final Mac mac = Mac.getInstance(algorithm);
 
-        assert mac.getMacLength() >= 8;
+        if (mac.getMacLength() < 8) {
+            throw new IllegalArgumentException("Algorithm (" + algorithm + ") has a MAC length less than 8 bytes");
+        }
 
         this.algorithm = algorithm;
 
