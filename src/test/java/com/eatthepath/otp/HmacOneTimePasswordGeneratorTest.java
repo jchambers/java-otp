@@ -25,10 +25,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
-import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Locale;
@@ -41,7 +41,7 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 class HmacOneTimePasswordGeneratorTest {
 
-    private static final Key HOTP_KEY =
+    private static final SecretKey HOTP_KEY =
             new SecretKeySpec("12345678901234567890".getBytes(StandardCharsets.US_ASCII),
                     HmacOneTimePasswordGenerator.HOTP_HMAC_ALGORITHM);
 

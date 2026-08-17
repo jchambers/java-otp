@@ -6,15 +6,15 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 
 import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 import java.security.InvalidKeyException;
-import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 
 @State(Scope.Benchmark)
 public class HmacOneTimePasswordGeneratorBenchmark {
 
     private HmacOneTimePasswordGenerator hotp;
-    private Key key;
+    private SecretKey key;
 
     private int counter = 0;
 

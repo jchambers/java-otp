@@ -26,10 +26,10 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.crypto.Mac;
+import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
-import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.Instant;
@@ -102,7 +102,7 @@ class TimeBasedOneTimePasswordGeneratorTest {
                 new TimeBasedOneTimePasswordGenerator(Duration.ofSeconds(30), 8, algorithm);
 
         final Instant timestamp = Instant.ofEpochSecond(epochSeconds);
-        final Key key = new SecretKeySpec(keyBytes, algorithm);
+        final SecretKey key = new SecretKeySpec(keyBytes, algorithm);
 
         assertEquals(expectedOneTimePassword, totp.generateOneTimePassword(key, timestamp));
     }
@@ -139,7 +139,7 @@ class TimeBasedOneTimePasswordGeneratorTest {
                 new TimeBasedOneTimePasswordGenerator(Duration.ofSeconds(30), 8, algorithm);
 
         final Instant timestamp = Instant.ofEpochSecond(epochSeconds);
-        final Key key = new SecretKeySpec(keyBytes, algorithm);
+        final SecretKey key = new SecretKeySpec(keyBytes, algorithm);
 
         assertEquals(expectedOneTimePassword, totp.generateOneTimePasswordString(key, timestamp));
     }
@@ -176,7 +176,7 @@ class TimeBasedOneTimePasswordGeneratorTest {
                 new TimeBasedOneTimePasswordGenerator(Duration.ofSeconds(30), 8, algorithm);
 
         final Instant timestamp = Instant.ofEpochSecond(epochSeconds);
-        final Key key = new SecretKeySpec(keyBytes, algorithm);
+        final SecretKey key = new SecretKeySpec(keyBytes, algorithm);
 
         assertEquals(expectedOneTimePassword, totp.generateOneTimePasswordString(key, timestamp, locale));
     }
@@ -210,7 +210,7 @@ class TimeBasedOneTimePasswordGeneratorTest {
     void validateOneTimePasswordInt() throws InvalidKeyException {
         final TimeBasedOneTimePasswordGenerator totp = new TimeBasedOneTimePasswordGenerator();
         final Instant timestamp = Instant.now();
-        final Key key =
+        final SecretKey key =
             new SecretKeySpec(HMAC_SHA1_KEY_BYTES, TimeBasedOneTimePasswordGenerator.TOTP_ALGORITHM_HMAC_SHA1);
 
         assertTrue(totp.validateOneTimePassword(key, timestamp, totp.generateOneTimePassword(key, timestamp)));
@@ -223,7 +223,7 @@ class TimeBasedOneTimePasswordGeneratorTest {
     @Test
     void validateOneTimePasswordString() throws InvalidKeyException {
         final TimeBasedOneTimePasswordGenerator totp = new TimeBasedOneTimePasswordGenerator();
-        final Key key =
+        final SecretKey key =
             new SecretKeySpec(HMAC_SHA1_KEY_BYTES, TimeBasedOneTimePasswordGenerator.TOTP_ALGORITHM_HMAC_SHA1);
 
         // A timestamp of 1970-01-01T00:18:00Z with a default TOTP generator produces a one-time password of "003784"

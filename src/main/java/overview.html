@@ -36,12 +36,12 @@ THE SOFTWARE. -->
 
         <p>To actually generate time-based one-time passwords, you'll need a secret key and a timestamp. Secure key management is beyond the scope of this document; for the purposes of an example, though, we'll generate a random key:</p>
 
-        <pre>final Key secretKey;
+        <pre>final SecretKey key;
 {
     final KeyGenerator keyGenerator = KeyGenerator.getInstance(totp.getAlgorithm());
     keyGenerator.init(160);
 
-    secretKey = keyGenerator.generateKey();
+    key = keyGenerator.generateKey();
 }</pre>
 
         <p>Armed with a secret key, we can deterministically generate one-time passwords for any timestamp:</p>
