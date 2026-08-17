@@ -275,7 +275,9 @@ public class HmacOneTimePasswordGenerator {
      * @see <a href="https://datatracker.ietf.org/doc/html/rfc4226#section-7">HOTP: An HMAC-Based One-Time Password Algorithm (RFC 4226) - Security Requirements</a>
      */
     public boolean validateOneTimePassword(final SecretKey key, final long counter, final int oneTimePassword) throws InvalidKeyException {
-        return generateOneTimePassword(key, counter) == oneTimePassword;
+        // This looks a little goofy, but the idea is to ward off any CPU-specific optimizations that might make
+        // direct integer comparison a not-constant-time operation
+        return (generateOneTimePassword(key, counter) ^ oneTimePassword) == 0;
     }
 
     /**
