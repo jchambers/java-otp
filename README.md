@@ -29,7 +29,7 @@ final TimeBasedOneTimePasswordGenerator totp = new TimeBasedOneTimePasswordGener
 To actually generate time-based one-time passwords, you'll need a key and a timestamp. Secure key management is beyond the scope of this document; for the purposes of an example, though, we'll generate a random key:
 
 ```java
-final Key key;
+final SecretKey key;
 {
     final KeyGenerator keyGenerator = KeyGenerator.getInstance(totp.getAlgorithm());
 

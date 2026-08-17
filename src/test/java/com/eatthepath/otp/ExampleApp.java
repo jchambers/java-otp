@@ -22,8 +22,8 @@ package com.eatthepath.otp;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.Mac;
+import javax.crypto.SecretKey;
 import java.security.InvalidKeyException;
-import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 
@@ -31,7 +31,7 @@ public class ExampleApp {
     public static void main(final String[] args) throws NoSuchAlgorithmException, InvalidKeyException {
         final TimeBasedOneTimePasswordGenerator totp = new TimeBasedOneTimePasswordGenerator();
 
-        final Key key;
+        final SecretKey key;
         {
             final KeyGenerator keyGenerator = KeyGenerator.getInstance(totp.getAlgorithm());
 

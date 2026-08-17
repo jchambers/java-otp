@@ -21,8 +21,8 @@
 package com.eatthepath.otp;
 
 import javax.crypto.Mac;
+import javax.crypto.SecretKey;
 import java.security.InvalidKeyException;
-import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.Instant;
@@ -34,7 +34,7 @@ import java.util.stream.Stream;
  * <a href="https://tools.ietf.org/html/rfc6238">RFC&nbsp;6238</a>.</p>
  *
  * <p>{@code TimeBasedOneTimePasswordGenerator} instances are thread-safe and may be shared between threads. Note that
- * the {@link #generateOneTimePassword(Key, Instant)} method (and its relatives) are {@code synchronized}; in
+ * the {@link #generateOneTimePassword(SecretKey, Instant)} method (and its relatives) are {@code synchronized}; in
  * multi-threaded applications that make heavy use of a shared {@code TimeBasedOneTimePasswordGenerator} instance,
  * synchronization may become a performance bottleneck. In that case, callers may benefit from using one
  * {@code TimeBasedOneTimePasswordGenerator} instance per thread (for example, with a {@link ThreadLocal}).</p>
@@ -158,7 +158,7 @@ public class TimeBasedOneTimePasswordGenerator {
      *
      * @throws InvalidKeyException if the given key is inappropriate for initializing the {@link Mac} for this generator
      */
-    public int generateOneTimePassword(final Key key, final Instant timestamp) throws InvalidKeyException {
+    public int generateOneTimePassword(final SecretKey key, final Instant timestamp) throws InvalidKeyException {
         return this.hotp.generateOneTimePassword(key, getCounterValue(timestamp));
     }
 
@@ -175,7 +175,7 @@ public class TimeBasedOneTimePasswordGenerator {
      *
      * @see Locale#getDefault()
      */
-    public String generateOneTimePasswordString(final Key key, final Instant timestamp) throws InvalidKeyException {
+    public String generateOneTimePasswordString(final SecretKey key, final Instant timestamp) throws InvalidKeyException {
         return this.generateOneTimePasswordString(key, timestamp, Locale.getDefault());
     }
 
@@ -190,7 +190,7 @@ public class TimeBasedOneTimePasswordGenerator {
      *
      * @throws InvalidKeyException if the given key is inappropriate for initializing the {@link Mac} for this generator
      */
-    public String generateOneTimePasswordString(final Key key, final Instant timestamp, final Locale locale) throws InvalidKeyException {
+    public String generateOneTimePasswordString(final SecretKey key, final Instant timestamp, final Locale locale) throws InvalidKeyException {
         return this.hotp.formatOneTimePassword(this.generateOneTimePassword(key, timestamp), locale);
     }
 
@@ -213,7 +213,7 @@ public class TimeBasedOneTimePasswordGenerator {
      *
      * @see <a href="https://datatracker.ietf.org/doc/html/rfc6238#section-5">TOTP: Time-Based One-Time Password Algorithm (RFC 6238) - Security Considerations</a>
      */
-    public boolean validateOneTimePassword(final Key key, final Instant timestamp, final String oneTimePassword) throws InvalidKeyException {
+    public boolean validateOneTimePassword(final SecretKey key, final Instant timestamp, final String oneTimePassword) throws InvalidKeyException {
         return hotp.validateOneTimePassword(key, getCounterValue(timestamp), oneTimePassword);
     }
 
@@ -234,7 +234,7 @@ public class TimeBasedOneTimePasswordGenerator {
      *
      * @see <a href="https://datatracker.ietf.org/doc/html/rfc6238#section-5">TOTP: Time-Based One-Time Password Algorithm (RFC 6238) - Security Considerations</a>
      */
-    public boolean validateOneTimePassword(final Key key, final Instant timestamp, final int oneTimePassword) throws InvalidKeyException {
+    public boolean validateOneTimePassword(final SecretKey key, final Instant timestamp, final int oneTimePassword) throws InvalidKeyException {
         return hotp.validateOneTimePassword(key, getCounterValue(timestamp), oneTimePassword);
     }
 

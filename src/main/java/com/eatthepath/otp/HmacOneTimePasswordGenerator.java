@@ -21,10 +21,10 @@
 package com.eatthepath.otp;
 
 import javax.crypto.Mac;
+import javax.crypto.SecretKey;
 import javax.crypto.ShortBufferException;
 import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
-import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 
@@ -153,7 +153,7 @@ public class HmacOneTimePasswordGenerator {
      *
      * @throws InvalidKeyException if the given key is inappropriate for initializing the {@link Mac} for this generator
      */
-    public int generateOneTimePassword(final Key key, final long counter) throws InvalidKeyException {
+    public int generateOneTimePassword(final SecretKey key, final long counter) throws InvalidKeyException {
         final Mac mac = getMac();
         final ByteBuffer buffer = ByteBuffer.allocate(mac.getMacLength());
 
@@ -196,7 +196,7 @@ public class HmacOneTimePasswordGenerator {
      *
      * @see Locale#getDefault()
      */
-    public String generateOneTimePasswordString(final Key key, final long counter) throws InvalidKeyException {
+    public String generateOneTimePasswordString(final SecretKey key, final long counter) throws InvalidKeyException {
         return this.generateOneTimePasswordString(key, counter, Locale.getDefault());
     }
 
@@ -212,7 +212,7 @@ public class HmacOneTimePasswordGenerator {
      *
      * @throws InvalidKeyException if the given key is inappropriate for initializing the {@link Mac} for this generator
      */
-    public String generateOneTimePasswordString(final Key key, final long counter, final Locale locale) throws InvalidKeyException {
+    public String generateOneTimePasswordString(final SecretKey key, final long counter, final Locale locale) throws InvalidKeyException {
         return this.formatOneTimePassword(generateOneTimePassword(key, counter), locale);
     }
 
@@ -235,7 +235,7 @@ public class HmacOneTimePasswordGenerator {
      *
      * @see <a href="https://datatracker.ietf.org/doc/html/rfc4226#section-7">HOTP: An HMAC-Based One-Time Password Algorithm (RFC 4226) - Security Requirements</a>
      */
-    public boolean validateOneTimePassword(final Key key, final long counter, final String oneTimePassword) throws InvalidKeyException {
+    public boolean validateOneTimePassword(final SecretKey key, final long counter, final String oneTimePassword) throws InvalidKeyException {
         if (oneTimePassword == null) {
             throw new NullPointerException("One-time password must not be null");
         }
@@ -274,7 +274,7 @@ public class HmacOneTimePasswordGenerator {
      *
      * @see <a href="https://datatracker.ietf.org/doc/html/rfc4226#section-7">HOTP: An HMAC-Based One-Time Password Algorithm (RFC 4226) - Security Requirements</a>
      */
-    public boolean validateOneTimePassword(final Key key, final long counter, final int oneTimePassword) throws InvalidKeyException {
+    public boolean validateOneTimePassword(final SecretKey key, final long counter, final int oneTimePassword) throws InvalidKeyException {
         return generateOneTimePassword(key, counter) == oneTimePassword;
     }
 
