@@ -21,4 +21,4 @@ jobs:
         java-version: ${{ matrix.java }}
         cache: 'maven'
     - name: Test with Maven
-      run: mvn verify -B --file pom.xml
+      run: ./mvnw test -B --file pom.xml
