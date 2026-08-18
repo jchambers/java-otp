@@ -1,6 +1,8 @@
 name: Deploy to Maven Central
 
-on: [release]
+on:
+  release:
+    types: [published]
 
 jobs:
   test:
