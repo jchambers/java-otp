@@ -52,6 +52,19 @@ final Instant later = now.plus(totp.getTimeStep());
 System.out.println("Current password: " + totp.generateOneTimePasswordString(key, now));
 System.out.println("Future password:  " + totp.generateOneTimePasswordString(key, later));</pre>
 
+        <p>To validate a one-time password:</p>
+
+        <pre>// In a real-world scenario, this might come from an HTTP request or some other remote channel
+final int userSuppliedOneTimePassword = 164092;
+
+if (totp.validateOneTimePassword(key, now, userSuppliedOneTimePassword)) {
+    System.out.println("Password was correct");
+} else {
+    System.out.println("Password was incorrect");
+}</pre>
+
+        <p>Please note that validateOneTimePassword simply checks equality of one-time passwords; compensating for clock drift,  throttling/rate-limiting password validation attempts, clock resynchronization, and so on are all beyond java-otp's scope and callers must address those concerns on their own. For more information, please see <a href="https://datatracker.ietf.org/doc/html/rfc6238#section-5">"TOTP: Time-Based One-Time Password Algorithm (RFC 6238) - Security Considerations"</a> (and <a href="https://datatracker.ietf.org/doc/html/rfc4226#section-7">"HOTP: An HMAC-Based One-Time Password Algorithm (RFC 4226) - Security Requirements"</a> for HOTP).</p>
+
         <h1>License and copyright</h1>
 
         <p>java-otp is copyright (c) 2016 Jon Chambers and available under the <a href="https://opensource.org/licenses/MIT">MIT License</a>.</p>
