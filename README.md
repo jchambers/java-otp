@@ -60,6 +60,22 @@ Current password: 164092
 Future password:  046148
 ```
 
+To validate a one-time password:
+
+```java
+// In a real-world scenario, this might come from an HTTP request or some other remote channel
+final int userSuppliedOneTimePassword = 164092;
+
+if (totp.validateOneTimePassword(key, now, userSuppliedOneTimePassword)) {
+    System.out.println("Password was correct");
+} else {
+    System.out.println("Password was incorrect");
+}
+```
+
+> [!CAUTION]
+> Please note that `validateOneTimePassword` simply checks equality of one-time passwords; compensating for clock drift,  throttling/rate-limiting password validation attempts, clock resynchronization, and so one are all beyond java-otp's scope and callers must address those concerns on their own. For more information, please see ["TOTP: Time-Based One-Time Password Algorithm (RFC 6238) - Security Considerations"](https://datatracker.ietf.org/doc/html/rfc6238#section-5) (and ["HOTP: An HMAC-Based One-Time Password Algorithm (RFC 4226) - Security Requirements"](https://datatracker.ietf.org/doc/html/rfc4226#section-7) for HOTP).
+
 ## Performance and best practices
 
 One-time password generators are thread-safe and reusable. Generally, applications should treat one-time password generator instances as long-lived resources (as opposed to creating new generators for each password-generation call).

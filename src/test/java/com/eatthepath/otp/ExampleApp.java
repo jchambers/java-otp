@@ -49,5 +49,14 @@ public class ExampleApp {
 
         System.out.println("Current password: " + totp.generateOneTimePasswordString(key, now));
         System.out.println("Future password:  " + totp.generateOneTimePasswordString(key, later));
+
+        // In a real-world scenario, this might come from an HTTP request or some other remote channel
+        final int userSuppliedOneTimePassword = 164092;
+
+        if (totp.validateOneTimePassword(key, now, userSuppliedOneTimePassword)) {
+            System.out.println("Password was correct");
+        } else {
+            System.out.println("Password was incorrect");
+        }
     }
 }
