@@ -2,6 +2,8 @@ java-otp is a Java library for generating [HOTP (RFC 4226)](https://tools.ietf.o
 
 ## Getting java-otp
 
+java-otp requires Java 8 or newer.
+
 You can download java-otp as a jar file (it has no dependencies) from the [GitHub releases page](https://github.com/jchambers/java-otp/releases) and add it to your project's classpath. If you're using Maven (or something that understands Maven dependencies) to build your project, you can add java-otp as a dependency:
 
 ```xml
@@ -11,8 +13,6 @@ You can download java-otp as a jar file (it has no dependencies) from the [GitHu
   <version>0.4.0</version>
 </dependency>
 ```
-
-java-otp works with Java 8 or newer. If you need support for versions of Java older than Java 8, you may try using [java-otp v0.1](https://github.com/jchambers/java-otp/releases/tag/java-otp-0.1.0) (although it is no longer supported).
 
 ## Documentation
 
