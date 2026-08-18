@@ -4,4 +4,5 @@
 
     <useDirty>true</useDirty>
     <nonQualifierBranches>main</nonQualifierBranches>
+    <regexVersionTag>java-otp-(.+)</regexVersionTag>
 </configuration>
