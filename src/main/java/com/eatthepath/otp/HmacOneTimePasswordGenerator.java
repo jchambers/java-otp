@@ -219,7 +219,7 @@ public class HmacOneTimePasswordGenerator {
     /**
      * Checks whether a given one-time password matches the one-time password generated for the given key and counter
      * value. Note that this method simply checks equality of two one-time passwords; incrementing expected counter
-     * values, throttling/rate-limiting, counter resynchronization, and so one are all beyond the scope of this method.
+     * values, throttling/rate-limiting, counter resynchronization, and so on are all beyond the scope of this method.
      *
      * @param key the key to be used to generate the password
      * @param counter the counter value for which to generate the password
@@ -261,7 +261,7 @@ public class HmacOneTimePasswordGenerator {
     /**
      * Checks whether a given one-time password matches the one-time password generated for the given key and counter
      * value. Note that this method simply checks equality of two one-time passwords; incrementing expected counter
-     * values, throttling/rate-limiting, counter resynchronization, and so one are all beyond the scope of this method.
+     * values, throttling/rate-limiting, counter resynchronization, and so on are all beyond the scope of this method.
      *
      * @param key the key to be used to generate the password
      * @param counter the counter value for which to generate the password

@@ -74,7 +74,7 @@ if (totp.validateOneTimePassword(key, now, userSuppliedOneTimePassword)) {
 ```
 
 > [!CAUTION]
-> Please note that `validateOneTimePassword` simply checks equality of one-time passwords; compensating for clock drift,  throttling/rate-limiting password validation attempts, clock resynchronization, and so one are all beyond java-otp's scope and callers must address those concerns on their own. For more information, please see ["TOTP: Time-Based One-Time Password Algorithm (RFC 6238) - Security Considerations"](https://datatracker.ietf.org/doc/html/rfc6238#section-5) (and ["HOTP: An HMAC-Based One-Time Password Algorithm (RFC 4226) - Security Requirements"](https://datatracker.ietf.org/doc/html/rfc4226#section-7) for HOTP).
+> Please note that `validateOneTimePassword` simply checks equality of one-time passwords; compensating for clock drift,  throttling/rate-limiting password validation attempts, clock resynchronization, and so on are all beyond java-otp's scope and callers must address those concerns on their own. For more information, please see ["TOTP: Time-Based One-Time Password Algorithm (RFC 6238) - Security Considerations"](https://datatracker.ietf.org/doc/html/rfc6238#section-5) (and ["HOTP: An HMAC-Based One-Time Password Algorithm (RFC 4226) - Security Requirements"](https://datatracker.ietf.org/doc/html/rfc4226#section-7) for HOTP).
 
 ## Performance and best practices
 

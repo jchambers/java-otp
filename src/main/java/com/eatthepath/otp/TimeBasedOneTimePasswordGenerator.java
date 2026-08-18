@@ -197,7 +197,7 @@ public class TimeBasedOneTimePasswordGenerator {
     /**
      * Checks whether a given one-time password matches the one-time password generated for the given key and timestamp.
      * Note that this method simply checks equality of two one-time passwords; compensating for clock drift,
-     * throttling/rate-limiting, clock resynchronization, and so one are all beyond the scope of this method.
+     * throttling/rate-limiting, clock resynchronization, and so on are all beyond the scope of this method.
      *
      * @param key the key to be used to generate the password
      * @param timestamp the timestamp for which to generate the password
@@ -220,7 +220,7 @@ public class TimeBasedOneTimePasswordGenerator {
     /**
      * Checks whether a given one-time password matches the one-time password generated for the given key and timestamp.
      * Note that this method simply checks equality of two one-time passwords; compensating for clock drift,
-     * throttling/rate-limiting, clock resynchronization, and so one are all beyond the scope of this method.
+     * throttling/rate-limiting, clock resynchronization, and so on are all beyond the scope of this method.
      *
      * @param key the key to be used to generate the password
      * @param timestamp the timestamp for which to generate the password
